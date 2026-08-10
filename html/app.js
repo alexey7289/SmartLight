@@ -23,8 +23,8 @@ async function initApp() {
         // Разгружаем все содержимое в currentSettings
         currentSettings = await response.json();
 
-        // Вывод в консоль содержимого файла в виде таблицы
         console.log('[initApp] Настройки успешно загружены')
+        // Вывод в консоль содержимого файла в виде таблицы
         //console.table(currentSettings);
 
         // Вызов функции для перерисовки всего интерфейса
