@@ -74,6 +74,7 @@ function renderAll() {
     renderIsPower();
     renderIsDark();
     renderFieldDimsX();
+    renderFieldDimsY();
 }
 
 
@@ -131,6 +132,8 @@ function renderIsPower() {
             fabButton.setAttribute('variant', 'secondary');         
             if (iconElement) iconElement.textContent = 'light_off';
         }
+    } else {
+        logWarnRender('renderIsPower', 'Элемент "isPower" не найден или отсутствует в');
     }
 }
 
@@ -187,6 +190,29 @@ function renderFieldDimsX() {
     }
 }
 
+
+
+
+
+
+
+
+
+
+function renderFieldDimsY() {
+    const rfdy = document.getElementById('fieldDimsY');
+    if (!rfdy) {
+        console.error('[renderFieldDimsY] Элемент с id="fieldDimsY" не существует');
+        return;
+    }
+    if (currentSettings.dimsY !== undefined) {
+        console.log('[renderFieldDimsY] Размер "Y":', currentSettings.dimsY);
+        rfdy.value = currentSettings.dimsY;
+    } else {
+        logWarnRender('renderFieldDimsY', 'Элемент "dimsY" не найден или отсутствует в');
+    }
+
+}
 
 
 // Запускаем функцию, когда HTML полностью загрузился

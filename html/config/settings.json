@@ -1,23 +1,24 @@
 {
     "version": "0.0.01",
-    "controllerIp":"192.168.1.4",
+    "isPower": true,
     "isDark": false,
-    "isPower": 0,
+    "dimsX": 200,
+    "dimsY": 150,
+
+
+
+
+
+
+    "controllerIp":"192.168.1.4",
     "isOnline": false,
     "voltage": 5,
     "colorType": "GRB",
-    
     "step": 10,
     "animationSpeed": 1300,
     "softstartSpeed": 500,
     "maxBrightness": 75,  
     "drawId": 2,
     "effectId": 5,
-    "channelsQty": 1,
-
-
-
-    
-
-    "dimsX": 200
+    "channelsQty": 1
 }
