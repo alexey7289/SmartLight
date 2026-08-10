@@ -1,0 +1,23 @@
+{
+    "version": "2.3.22",
+    "controllerIp":"192.168.1.4",
+    "isDark": false,
+    "isPower": 0,
+    "isOnline": false,
+    "voltage": 5,
+    "colorType": "GRB",
+    
+    "step": 10,
+    "animationSpeed": 1300,
+    "softstartSpeed": 500,
+    "maxBrightness": 75,  
+    "drawId": 2,
+    "effectId": 5,
+    "channelsQty": 1,
+
+
+
+    
+
+    "dimsX": 200
+}
