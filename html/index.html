@@ -1,13 +1,11 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="ru" class="light-theme">
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover">	<title>SmartLight</title>
     <title>Тестовая версия сайта</title>
 	<link rel="icon" href="data:,"> <!-- Пустая favicon -->
 	<link rel="stylesheet" href="css/styles.css">
-	<link rel="stylesheet" href="css/light.css">
-	<link rel="stylesheet" href="css/dark.css">
 	<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
 	<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,150,0..1,-50..200&icon_names=light_off,lightbulb"/>
 	<style>
@@ -30,7 +28,7 @@
 	</script>	
 	<script src="app.js" defer></script>
 </head>
-<body class="light">
+<body>
 
     <h1>SmartLight <span><sup id="appVersion">Загрузка...</sup></span></h1>
         
@@ -44,14 +42,15 @@
     <br><br>
 
 
-	<md-outlined-text-field style="margin: 20px;" id="fieldDimsX" label="DimsX" value="20"></md-outlined-text-field>
-	<md-outlined-text-field style="margin: 20px;" id="fieldDimsY" label="DimsY" value="20"></md-outlined-text-field>
-	<md-outlined-text-field style="margin: 20px;" id="fieldDimsA" label="DimsA" value="20"></md-outlined-text-field>
+	<md-outlined-text-field style="margin: 20px;" id="fieldDimsX" label="DimsX" value="20" max="10000" min="5" type="number" no-spinner error-text="Ошибка"></md-outlined-text-field>
+	<md-outlined-text-field style="margin: 20px;" id="fieldDimsY" label="DimsY" value="20" max="10000" min="5" type="number" no-spinner error-text="Ошибка"></md-outlined-text-field>
+	<md-outlined-text-field style="margin: 20px;" id="fieldDimsA" label="DimsA" value="20" max="10000" min="5" type="number" no-spinner error-text="Ошибка"></md-outlined-text-field>
+	<md-outlined-text-field style="margin: 20px;" id="fieldDimsB" label="DimsB" value="20" max="10000" min="5" type="number" no-spinner error-text="Ошибка"></md-outlined-text-field>
 
     
     <br><br>
 
-    <md-fab variant="primary" lowered id="toggleIsPower" >
+    <md-fab variant="tertiary" lowered id="toggleIsPower" >
         <md-icon slot="icon">lightbulb</md-icon>
     </md-fab>
 

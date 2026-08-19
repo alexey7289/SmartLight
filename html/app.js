@@ -4,7 +4,7 @@ let currentSettings = {}
 const settingsPath = './config/settings.json'
 
 /**
- * Функция импорта данных из файла который описан в settingsPath
+ * Функция импорта данных из файла который описан в переменной settingsPath
  * 
  */
 async function initApp() {
@@ -75,6 +75,8 @@ function renderAll() {
     renderIsDark();
     renderFieldDimsX();
     renderFieldDimsY();
+    renderFieldDimsA();
+    renderFieldDimsB();
 }
 
 
@@ -129,7 +131,7 @@ function renderIsPower() {
             fabButton.setAttribute('variant', 'primary');
             if (iconElement) iconElement.textContent = 'lightbulb';
         } else {
-            fabButton.setAttribute('variant', 'secondary');         
+            fabButton.setAttribute('variant', 'tertiary');         
             if (iconElement) iconElement.textContent = 'light_off';
         }
     } else {
@@ -174,7 +176,7 @@ function renderIsDark() {
 
 
 /**
- * Функция отображения значения dimsX из файла настроек
+ * Функция отображения значения размера dimsX из файла настроек
  */
 function renderFieldDimsX() {
     const rfdx = document.getElementById('fieldDimsX');
@@ -198,7 +200,9 @@ function renderFieldDimsX() {
 
 
 
-
+/**
+ * Функция отображения значения размера dimsY из файла настроек
+ */
 function renderFieldDimsY() {
     const rfdy = document.getElementById('fieldDimsY');
     if (!rfdy) {
@@ -211,7 +215,55 @@ function renderFieldDimsY() {
     } else {
         logWarnRender('renderFieldDimsY', 'Элемент "dimsY" не найден или отсутствует в');
     }
+}
 
+
+
+
+
+
+
+
+
+/**
+ * Функция отображения значения дополнительного размера dimsA из файла настроек
+ */
+function renderFieldDimsA() {
+    const rfda = document.getElementById('fieldDimsA');
+    if (!rfda) {
+        console.error('[renderFieldDimsA] Элемент с id="fieldDimsA" не существует');
+        return;
+    }
+    if (currentSettings.dimsA !== undefined) {
+        console.log('[renderFieldDimsA] Дополнительный размер "A":', currentSettings.dimsA);
+        rfda.value = currentSettings.dimsA;
+    } else {
+        logWarnRender('renderFieldDimsA', 'Элемент "dimsA" не найден или отсутствует в');
+    }
+}
+
+
+
+
+
+
+
+
+/**
+ * Функция отображения значения дополнительного размера dimsB из файла настроек
+ */
+function renderFieldDimsB() {
+    const rfdb = document.getElementById('fieldDimsB');
+    if (!rfdb) {
+        console.error('[renderFieldDimsB] Элемент с id="fieldDimsB" не существует');
+        return;
+    }
+    if (currentSettings.dimsB !== undefined) {
+        console.log('[renderFieldDimsB] Дополнительный размер "B":', currentSettings.dimsB);
+        rfdb.value = currentSettings.dimsB;
+    } else {
+        logWarnRender('renderFieldDimsB', 'Элемент "dimsB" не найден или отсутствует в');
+    }
 }
 
 
