@@ -1,49 +1,63 @@
 //app.js
-let currentSettings = {}
-
+let currentSettings = null;
 const settingsPath = './config/settings.json'
 
+
+
+
+
+
+
+
+
+
 /**
- * Функция импорта данных из файла который описан в переменной settingsPath
- * 
+ * Отправка логов в окно логирования
  */
-async function initApp() {
-    console.log('%c[initApp] Инициализация приложения...', 'background: yellow; color: #2196F3; font-weight: bold;');
-    console.log('[initApp] Запрос настроек из ./config/settings.json')
-
-    try {
-        // Запрашиваем файл настроек
-        const response = await fetch (settingsPath);
-        // Проверяем, что сервер успешно отдал файл
-        if (!response.ok) {
-            console.error('[initApp] Ошибка чтения файла ./config/settings.json');
-            return; // Выходим из фукции если файл не прочитался
-        }
-
-        // Разгружаем все содержимое в currentSettings
-        currentSettings = await response.json();
-
-        console.log('[initApp] Настройки успешно загружены')
-        // Вывод в консоль содержимого файла в виде таблицы
-        //console.table(currentSettings);
-
-        // Вызов функции для перерисовки всего интерфейса
-        renderAll();
-
-        // Проверяем, есть ли настройка isDark и выводим ее значение
-        //if (currentSettings.isDark !== undefined) {
-        //    console.log('[app-v2.js] Значение настройки isDark:', currentSettings.isDark);
-        //} else {
-        //    console.warn('[app-v2.js] Настройка isDark не найдена');
-        //}
-
-
-    } catch (error) {
-        console.error('[initApp] Сетевая ошибка]');
-    }
+function addLog(message, isError = false) {
+    const logField = document.getElementById('logField');
+    if (!logField) return;
+    const timestamp = new Date().toLocaleTimeString();
+    const prefix = isError ? '[ERROR]' : '[INFO]';
+    // Добавляем новую строку к существующему логу
+    const currentLog = logField.value || '';
+    logField.value = `${currentLog}\n${timestamp} ${prefix} ${message}`.trim();
 }
 
 
+
+
+
+
+
+
+
+
+
+
+
+/**
+ * Функция проверки кратности размеров в полях ввода к размеру кластера
+ */
+function checkDimensionsDivisibility() {
+    let pixelCount = currentSettings.dimsX / currentSettings.pixelSize;
+    if (!currentSettings) {
+        console.error(`[checkDimensionsDivisibility] Данные из ${settingsPath} не загрузились.`);
+        return;
+    }
+    // --->   Поле fieldDimsX   <---
+    if (currentSettings.dimsX % currentSettings.pixelSize === 0){
+       console.log (`[checkDimensionsDivisibility] fieldDimsX=${currentSettings.dimsX} делится без остатка на pixelSize=${currentSettings.pixelSize}`);
+       fieldDimsX.supportingText = `ОК. ${pixelCount} пикселей`;
+       addLog('Делится без остатка');
+       return true;
+    } else {
+        console.error (`[checkDimensionsDivisibility] Ошибка деления без остатка fieldDimsX=${currentSettings.dimsX} на pixelSize=${currentSettings.pixelSize}`);
+        fieldDimsX.error = true;
+        fieldDimsX.errorText = 'Не делится';
+        return false;
+    }
+}
 
 
 
@@ -77,6 +91,7 @@ function renderAll() {
     renderFieldDimsY();
     renderFieldDimsA();
     renderFieldDimsB();
+    renderFieldPixelSize()
 }
 
 
@@ -267,5 +282,105 @@ function renderFieldDimsB() {
 }
 
 
-// Запускаем функцию, когда HTML полностью загрузился
-document.addEventListener('DOMContentLoaded', initApp);
+
+
+
+
+
+
+/**
+ * Функция отображения значения дополнительного размера dimsB из файла настроек
+ */
+function renderFieldPixelSize() {
+    const rfps = document.getElementById('fieldPixelSize');
+    if (!rfps) {
+        console.error('[renderFieldPixelSize] Элемент с id="fieldPixelSize" не существует');
+        return;
+    }
+    if (currentSettings.pixelSize !== undefined) {
+        console.log('[renderFieldPixelSize] Размер кластера ленты:', currentSettings.pixelSize);
+        rfps.value = currentSettings.pixelSize;
+    } else {
+        logWarnRender('renderFieldPixelSize', 'Элемент "pixelSize" не найден или отсутствует в');
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/**
+ * Функция импорта данных из файла который описан в переменной settingsPath
+ * 
+ */
+async function initApp() {
+    console.log('%c[initApp] Инициализация приложения...', 'background: yellow; color: #2196F3; font-weight: bold;');
+    console.log('[initApp] Запрос настроек из ./config/settings.json')
+
+    try {
+        // Запрашиваем файл настроек
+        const response = await fetch (settingsPath);
+        // Проверяем, что сервер успешно отдал файл
+        if (!response.ok) {
+            console.error('[initApp] Ошибка чтения файла ./config/settings.json');
+            return; // Выходим из фукции если файл не прочитался
+        }
+
+        // Разгружаем все содержимое в currentSettings
+        currentSettings = await response.json();
+
+        console.log('[initApp] Настройки успешно загружены')
+        // Вывод в консоль содержимого файла в виде таблицы
+        //console.table(currentSettings);
+
+        // Вызов функции для перерисовки всего интерфейса
+        //renderAll();
+
+        // Проверяем, есть ли настройка isDark и выводим ее значение
+        //if (currentSettings.isDark !== undefined) {
+        //    console.log('[app-v2.js] Значение настройки isDark:', currentSettings.isDark);
+        //} else {
+        //    console.warn('[app-v2.js] Настройка isDark не найдена');
+        //}
+
+
+    } catch (error) {
+        console.error('[initApp] Сетевая ошибка');
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+document.addEventListener('DOMContentLoaded', async () => {
+    await initApp();
+    
+    if (currentSettings) {
+        renderAll();                        // 1. Отрисовать все поля
+        checkDimensionsDivisibility();      // 2. Проверить и показать ошибки
+    }
+});
+

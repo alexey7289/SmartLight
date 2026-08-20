@@ -42,11 +42,22 @@
     <br><br>
 
 
-	<md-outlined-text-field style="margin: 20px;" id="fieldDimsX" label="DimsX" value="20" max="10000" min="5" type="number" no-spinner error-text="Ошибка"></md-outlined-text-field>
-	<md-outlined-text-field style="margin: 20px;" id="fieldDimsY" label="DimsY" value="20" max="10000" min="5" type="number" no-spinner error-text="Ошибка"></md-outlined-text-field>
-	<md-outlined-text-field style="margin: 20px;" id="fieldDimsA" label="DimsA" value="20" max="10000" min="5" type="number" no-spinner error-text="Ошибка"></md-outlined-text-field>
-	<md-outlined-text-field style="margin: 20px;" id="fieldDimsB" label="DimsB" value="20" max="10000" min="5" type="number" no-spinner error-text="Ошибка"></md-outlined-text-field>
+	<md-outlined-text-field style="margin: 20px;" id="fieldDimsX" label="Размер X" value="20" max="10000" min="5" type="number" no-spinner error-text="Ошибка"></md-outlined-text-field>
+	<md-outlined-text-field style="margin: 20px;" id="fieldDimsY" label="Размер Y" value="20" max="10000" min="5" type="number" no-spinner error-text="Ошибка"></md-outlined-text-field>
+	<md-outlined-text-field style="margin: 20px;" id="fieldDimsA" label="Размер A" value="20" max="10000" min="5" type="number" no-spinner error-text="Ошибка"></md-outlined-text-field>
+	<md-outlined-text-field style="margin: 20px;" id="fieldDimsB" label="Размер B" value="20" max="10000" min="5" type="number" no-spinner error-text="Ошибка"></md-outlined-text-field>
+	<md-outlined-text-field style="margin: 20px;" id="fieldPixelSize" label="Размер пикселя" value="20" max="10000" min="5" type="number" no-spinner error-text="Ошибка"></md-outlined-text-field>
 
+	<md-filled-text-field 
+		id="logField" 
+		label="Логи приложения" 
+		type="textarea" 
+		rows="5"
+		style="background: aqua !important;">
+	</md-filled-text-field>
+	<md-outlined-button id="btnClearLog" onclick="document.getElementById('logField').reset()">
+    	Очистить лог
+	</md-outlined-button>
     
     <br><br>
 

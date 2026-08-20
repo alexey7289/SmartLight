@@ -1,12 +1,12 @@
 {
-    "version": "0.0.02",
+    "version": "0.0.03",
     "isPower": true,
     "isDark": false,
     "dimsX": 200,
     "dimsY": 150,
-    "dimsA": 123,
+    "dimsA": 110,
     "dimsB": 289,
-    "clusterSize": 10,
+    "pixelSize": 10,
 
 
 
