@@ -1,6 +1,64 @@
 //app.js
+
 let currentSettings = null;
-const settingsPath = './config/settings.json'
+const settingsPath = './config/settings.json';
+
+let appVersion;
+let toggleIsDark;
+let fieldDimsX;
+let fieldDimsY;
+let fieldDimsA;
+let fieldDimsB;
+let fieldPixelSize;
+let logField;
+let toggleIsPower;
+
+
+/**
+ * Функция проверки наличия всех необходимых DOM-элементов на странице.
+ * 
+ * Находит элементы по их ID и сохраняет ссылки в глобальные переменные
+ * (fieldDimsX, fieldDimsY, fieldDimsA, fieldDimsB, logField).
+ * 
+ * @returns {boolean} 
+ *   - true:  все элементы найдены, глобальные переменные заполнены, 
+ *            приложение может работать дальше.
+ *   - false: один или несколько элементов отсутствуют. 
+ *            В консоль выведен список недостающих ID.
+ *            Точка входа (DOMContentLoaded) должна прервать дальнейшее выполнение.
+ */
+function validateDOMElements() {
+    appVersion = document.getElementById('appVersion');
+    toggleIsDark = document.getElementById('toggleIsDark');
+    fieldDimsX = document.getElementById('fieldDimsX');
+    fieldDimsY = document.getElementById('fieldDimsY');
+    fieldDimsA = document.getElementById('fieldDimsA');
+    fieldDimsB = document.getElementById('fieldDimsB');
+    fieldPixelSize = document.getElementById('fieldPixelSize');
+    logField = document.getElementById('logField');
+    toggleIsPower = document.getElementById('toggleIsPower');
+
+    const missingElements = [];
+
+    if (!appVersion) missingElements.push('appVersion');
+    if (!toggleIsDark) missingElements.push('toggleIsDark');
+    if (!fieldDimsX) missingElements.push('fieldDimsX');
+    if (!fieldDimsY) missingElements.push('fieldDimsY');
+    if (!fieldDimsA) missingElements.push('fieldDimsA');
+    if (!fieldDimsB) missingElements.push('fieldDimsB');
+    if (!fieldPixelSize) missingElements.push('fieldPixelSize');
+    if (!logField) missingElements.push('logField');
+    if (!toggleIsPower) missingElements.push('toggleIsPower');
+
+    if (missingElements.length > 0) {
+        console.error(`[validateDOMElements] Не найдены элементы: ${missingElements.join(', ')}`);
+        return false;
+    }
+
+    console.log('[validateDOMElements] Все DOM-элементы найдены');
+    return true;
+}
+
 
 
 
@@ -12,14 +70,28 @@ const settingsPath = './config/settings.json'
 
 
 /**
- * Отправка логов в окно логирования
+ * Функция добавления сообщения в окно логирования приложения.
+ * 
+ * Форматирует сообщение с временной меткой и префиксом (`[INFO]` или `[ERROR]`),
+ * добавляет новую строку к существующему логу в поле `logField`.
+ * Если поле лога не найдено (`logField === null`), функция завершается без действий.
+ * 
+ * @param {string} message - Текст сообщения для вывода в лог.
+ * @param {boolean} [isError=false] - Флаг ошибки. Если true, добавляется префикс `[ERROR]`,
+ *                                    иначе `[INFO]`.
+ * 
+ * @sideeffect
+ *   - Изменяет значение `logField.value`, добавляя новую строку лога.
+ *   - Не возвращает значение (void).
+ * 
+ * @example
+ *   addLog('Настройки загружены');                    // [INFO]
+ *   addLog('Файл не найден', true);                   // [ERROR]
  */
 function addLog(message, isError = false) {
-    const logField = document.getElementById('logField');
     if (!logField) return;
     const timestamp = new Date().toLocaleTimeString();
     const prefix = isError ? '[ERROR]' : '[INFO]';
-    // Добавляем новую строку к существующему логу
     const currentLog = logField.value || '';
     logField.value = `${currentLog}\n${timestamp} ${prefix} ${message}`.trim();
 }
@@ -37,24 +109,54 @@ function addLog(message, isError = false) {
 
 
 /**
- * Функция проверки кратности размеров в полях ввода к размеру кластера
+ * Функция проверки кратности размеров в поле ввода "X" к размеру пикселя
+ * 
+ * @returns {null | boolean} Результат проверки кратности:
+ * - `null` — если не находит данные настроек из currentSettings;
+ * - `true` — если деление выполняется без остатка;
+ * - `false` — если не делится без остатка.
  */
-function checkDimensionsDivisibility() {
+function checkDimsXDivisibility() {
     let pixelCount = currentSettings.dimsX / currentSettings.pixelSize;
     if (!currentSettings) {
-        console.error(`[checkDimensionsDivisibility] Данные из ${settingsPath} не загрузились.`);
+        console.error(`[checkDimsXDivisibility] Данные из ${settingsPath} не загрузились.`);
         return;
     }
-    // --->   Поле fieldDimsX   <---
     if (currentSettings.dimsX % currentSettings.pixelSize === 0){
-       console.log (`[checkDimensionsDivisibility] fieldDimsX=${currentSettings.dimsX} делится без остатка на pixelSize=${currentSettings.pixelSize}`);
+       console.log (`[checkDimsXDivisibility] fieldDimsX=${currentSettings.dimsX} делится без остатка на pixelSize=${currentSettings.pixelSize}`);
        fieldDimsX.supportingText = `ОК. ${pixelCount} пикселей`;
-       addLog('Делится без остатка');
        return true;
     } else {
-        console.error (`[checkDimensionsDivisibility] Ошибка деления без остатка fieldDimsX=${currentSettings.dimsX} на pixelSize=${currentSettings.pixelSize}`);
+        console.error (`[checkDimsXDivisibility] Ошибка деления без остатка fieldDimsX=${currentSettings.dimsX} на pixelSize=${currentSettings.pixelSize}`);
         fieldDimsX.error = true;
         fieldDimsX.errorText = 'Не делится';
+        return false;
+    }
+}
+
+
+/**
+ * Функция проверки кратности размеров в поле ввода "Y" к размеру пикселя
+ * 
+ * @returns {null | boolean} Результат проверки кратности:
+ * - `null` — если не находит данные настроек из currentSettings;
+ * - `true` — если деление выполняется без остатка;
+ * - `false` — если не делится без остатка.
+ */
+function checkDimsYDivisibility() {
+    let pixelCount = currentSettings.dimsY / currentSettings.pixelSize;
+    if (!currentSettings) {
+        console.error(`[checkDimsYDivisibility] Данные из ${settingsPath} не загрузились.`);
+        return;
+    }
+    if (currentSettings.dimsY % currentSettings.pixelSize === 0){
+       console.log (`[checkDimsYDivisibility] fieldDimsY=${currentSettings.dimsX} делится без остатка на pixelSize=${currentSettings.pixelSize}`);
+       fieldDimsY.supportingText = `ОК. ${pixelCount} пикселей`;
+       return true;
+    } else {
+        console.error (`[checkDimsYDivisibility] Ошибка деления без остатка fieldDimsY=${currentSettings.dimsX} на pixelSize=${currentSettings.pixelSize}`);
+        fieldDimsY.error = true;
+        fieldDimsY.errorText = 'Не делится';
         return false;
     }
 }
@@ -64,10 +166,37 @@ function checkDimensionsDivisibility() {
 
 
 
+
+
+
+
+
+/**
+ * Показывает или скрывает поля DimsA и DimsB в зависимости от patternID.
+ * @returns {boolean} `true` если поля показаны, `false` если скрыты
+ */
+function toggleExtraDims() {
+    if (!fieldDimsA || !fieldDimsB) return false;
+    
+    const isVisible = currentSettings?.patternID > 3;
+    const display = isVisible ? '' : 'none';
+    
+    fieldDimsA.style.display = display;
+    fieldDimsB.style.display = display;
+    
+    return isVisible;
+}
+
+
+
+
+
+
+
 /**
  * Функция вывода сообщения Warning в консоль браузера для render-функций
  * @param {*} funcName - имя функции вызвавшей сообщение
- * @param {*} message - текст сообщения
+ * @param {string} message - текст сообщения
  */
 function logWarnRender(funcname, message) {
     console.warn(`[${funcname}] ${message}`, settingsPath);
@@ -322,40 +451,46 @@ function renderFieldPixelSize() {
 
 
 
-
 /**
- * Функция импорта данных из файла который описан в переменной settingsPath
+ * Асинхронная функция инициализации приложения.
  * 
+ * Загружает файл настроек settings.json (путь указан в `settingsPath`),
+ * парсит его содержимое и сохраняет в глобальную переменную `currentSettings`.
+ * 
+ * @async
+ * @returns {Promise<void>}
+ *   - При успехе: `currentSettings` заполнен данными из JSON, интерфейс отрисован.
+ *   - При ошибке HTTP: в консоль выводится код ошибки, выполнение прерывается.
+ *   - При сетевой ошибке: в консоль выводится сообщение об ошибке, выполнение прерывается.
+ * @sideeffect
+ *   - Заполняет глобальную переменную `currentSettings`.
  */
 async function initApp() {
     console.log('%c[initApp] Инициализация приложения...', 'background: yellow; color: #2196F3; font-weight: bold;');
-    console.log('[initApp] Запрос настроек из ./config/settings.json')
+    console.log('[initApp] Запрос настроек из ./config/settings.json');
+    addLog('[initApp] Запрос настроек из ./config/settings.json', false);
 
     try {
         // Запрашиваем файл настроек
         const response = await fetch (settingsPath);
+
         // Проверяем, что сервер успешно отдал файл
         if (!response.ok) {
             console.error('[initApp] Ошибка чтения файла ./config/settings.json');
+            addLog('[initApp] Ошибка чтения файла ./config/settings.json', true);
             return; // Выходим из фукции если файл не прочитался
         }
 
         // Разгружаем все содержимое в currentSettings
         currentSettings = await response.json();
 
-        console.log('[initApp] Настройки успешно загружены')
+        console.log('[initApp] Настройки успешно загружены');
+        addLog('[initApp] Настройки успешно загружены', false);
         // Вывод в консоль содержимого файла в виде таблицы
         //console.table(currentSettings);
 
         // Вызов функции для перерисовки всего интерфейса
         //renderAll();
-
-        // Проверяем, есть ли настройка isDark и выводим ее значение
-        //if (currentSettings.isDark !== undefined) {
-        //    console.log('[app-v2.js] Значение настройки isDark:', currentSettings.isDark);
-        //} else {
-        //    console.warn('[app-v2.js] Настройка isDark не найдена');
-        //}
 
 
     } catch (error) {
@@ -376,11 +511,20 @@ async function initApp() {
 
 
 document.addEventListener('DOMContentLoaded', async () => {
+    // Сначала проверяем DOM
+    if (!validateDOMElements()) {
+        console.error('[Root] Критическая ошибка: отсутствуют необходимые DOM элементы. Работа приложения невозможна.');
+        return;
+    }
+    
+    // Загружаем настройки
     await initApp();
     
     if (currentSettings) {
-        renderAll();                        // 1. Отрисовать все поля
-        checkDimensionsDivisibility();      // 2. Проверить и показать ошибки
+        renderAll();
+        checkDimsXDivisibility();
+        checkDimsYDivisibility();
+        toggleExtraDims();
     }
 });
 
