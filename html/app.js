@@ -3,22 +3,11 @@
 let currentSettings = null;
 const settingsPath = './config/settings.json';
 
-let appVersion;
-let toggleIsDark;
-let fieldDimsX;
-let fieldDimsY;
-let fieldDimsA;
-let fieldDimsB;
-let fieldPixelSize;
-let logField;
-let toggleIsPower;
 
 
 /**
  * Функция проверки наличия всех необходимых DOM-элементов на странице.
- * 
- * Находит элементы по их ID и сохраняет ссылки в глобальные переменные
- * (fieldDimsX, fieldDimsY, fieldDimsA, fieldDimsB, logField).
+ * Находит элементы по их ID и сохраняет ссылки в глобальные переменные.
  * 
  * @returns {boolean} 
  *   - true:  все элементы найдены, глобальные переменные заполнены, 
@@ -37,6 +26,8 @@ function validateDOMElements() {
     fieldPixelSize = document.getElementById('fieldPixelSize');
     logField = document.getElementById('logField');
     toggleIsPower = document.getElementById('toggleIsPower');
+    btnSaveDims = document.getElementById('btnSaveDims');
+    selectPatternId = document.getElementById('selectPatternId');
 
     const missingElements = [];
 
@@ -49,6 +40,8 @@ function validateDOMElements() {
     if (!fieldPixelSize) missingElements.push('fieldPixelSize');
     if (!logField) missingElements.push('logField');
     if (!toggleIsPower) missingElements.push('toggleIsPower');
+    if (!btnSaveDims) missingElements.push('btnSaveDims');
+    if (!selectPatternId) missingElements.push('selectPatternId');
 
     if (missingElements.length > 0) {
         console.error(`[validateDOMElements] Не найдены элементы: ${missingElements.join(', ')}`);
@@ -74,16 +67,11 @@ function validateDOMElements() {
  * 
  * Форматирует сообщение с временной меткой и префиксом (`[INFO]` или `[ERROR]`),
  * добавляет новую строку к существующему логу в поле `logField`.
- * Если поле лога не найдено (`logField === null`), функция завершается без действий.
+ * Если поле логирования не найдено (`logField === null`), функция завершается без действий.
  * 
  * @param {string} message - Текст сообщения для вывода в лог.
  * @param {boolean} [isError=false] - Флаг ошибки. Если true, добавляется префикс `[ERROR]`,
  *                                    иначе `[INFO]`.
- * 
- * @sideeffect
- *   - Изменяет значение `logField.value`, добавляя новую строку лога.
- *   - Не возвращает значение (void).
- * 
  * @example
  *   addLog('Настройки загружены');                    // [INFO]
  *   addLog('Файл не найден', true);                   // [ERROR]
@@ -104,61 +92,43 @@ function addLog(message, isError = false) {
 
 
 
+/**
+ * Проверяет кратность данных в поле `dimsX` к `pixelSize`
+ * @returns {boolean} `true` - если делится без остатка
+ */
+function isDimsXValid() {
+    if (!currentSettings) {
+        console.error(`[isDimsXValid] Данные из ${settingsPath} не загрузились.`);
+        return false;
+    }
+    return currentSettings.dimsX % currentSettings.pixelSize === 0;
+}
 
 
 
 
 /**
- * Функция проверки кратности размеров в поле ввода "X" к размеру пикселя
- * 
- * @returns {null | boolean} Результат проверки кратности:
- * - `null` — если не находит данные настроек из currentSettings;
- * - `true` — если деление выполняется без остатка;
- * - `false` — если не делится без остатка.
+ * Отрисовывает статус поля ввода размера `dimsX` в зависимости от переданного флага.
  */
-function checkDimsXDivisibility() {
-    let pixelCount = currentSettings.dimsX / currentSettings.pixelSize;
-    if (!currentSettings) {
-        console.error(`[checkDimsXDivisibility] Данные из ${settingsPath} не загрузились.`);
-        return;
-    }
-    if (currentSettings.dimsX % currentSettings.pixelSize === 0){
-       console.log (`[checkDimsXDivisibility] fieldDimsX=${currentSettings.dimsX} делится без остатка на pixelSize=${currentSettings.pixelSize}`);
-       fieldDimsX.supportingText = `ОК. ${pixelCount} пикселей`;
-       return true;
+function uiStateDimsX(isValid) {
+    if (!fieldDimsX) return;
+    const pixelCount = currentSettings.dimsX / currentSettings.pixelSize;
+    if (isValid) {
+        fieldDimsX.supportingText = `OK. ${pixelCount} пикселей`;
+        fieldDimsX.error = false;
     } else {
-        console.error (`[checkDimsXDivisibility] Ошибка деления без остатка fieldDimsX=${currentSettings.dimsX} на pixelSize=${currentSettings.pixelSize}`);
         fieldDimsX.error = true;
         fieldDimsX.errorText = 'Не делится';
-        return false;
     }
 }
 
 
-/**
- * Функция проверки кратности размеров в поле ввода "Y" к размеру пикселя
- * 
- * @returns {null | boolean} Результат проверки кратности:
- * - `null` — если не находит данные настроек из currentSettings;
- * - `true` — если деление выполняется без остатка;
- * - `false` — если не делится без остатка.
- */
-function checkDimsYDivisibility() {
-    let pixelCount = currentSettings.dimsY / currentSettings.pixelSize;
-    if (!currentSettings) {
-        console.error(`[checkDimsYDivisibility] Данные из ${settingsPath} не загрузились.`);
-        return;
-    }
-    if (currentSettings.dimsY % currentSettings.pixelSize === 0){
-       console.log (`[checkDimsYDivisibility] fieldDimsY=${currentSettings.dimsX} делится без остатка на pixelSize=${currentSettings.pixelSize}`);
-       fieldDimsY.supportingText = `ОК. ${pixelCount} пикселей`;
-       return true;
-    } else {
-        console.error (`[checkDimsYDivisibility] Ошибка деления без остатка fieldDimsY=${currentSettings.dimsX} на pixelSize=${currentSettings.pixelSize}`);
-        fieldDimsY.error = true;
-        fieldDimsY.errorText = 'Не делится';
-        return false;
-    }
+
+
+function checkDimsX() {
+    const isValid = isDimsXValid();
+    uiStateDimsX(isValid);
+    return isValid;
 }
 
 
@@ -167,6 +137,21 @@ function checkDimsYDivisibility() {
 
 
 
+
+
+
+
+
+
+
+
+
+
+function uiStateSaveButton(isX) {
+    if (btnSaveDims) {
+        btnSaveDims.disabled = !isX;
+    }
+}
 
 
 
@@ -193,14 +178,6 @@ function toggleExtraDims() {
 
 
 
-/**
- * Функция вывода сообщения Warning в консоль браузера для render-функций
- * @param {*} funcName - имя функции вызвавшей сообщение
- * @param {string} message - текст сообщения
- */
-function logWarnRender(funcname, message) {
-    console.warn(`[${funcname}] ${message}`, settingsPath);
-}
 
 
 
@@ -220,7 +197,8 @@ function renderAll() {
     renderFieldDimsY();
     renderFieldDimsA();
     renderFieldDimsB();
-    renderFieldPixelSize()
+    renderFieldPixelSize();
+    renderSelectPatternId();
 }
 
 
@@ -246,7 +224,7 @@ function renderVersion() {
         console.log('[renderVersion] Версия веб-сервера:', currentSettings.version);
         rv.textContent = `v${currentSettings.version}`;       
     } else {
-        logWarnRender('renderVersion', 'Элемент "version" не найден или отсутствует в');
+        console.log('[renderVersion] Элемент "version" не найден или отсутствует в', settingsPath);
     }
 }
 
@@ -279,7 +257,7 @@ function renderIsPower() {
             if (iconElement) iconElement.textContent = 'light_off';
         }
     } else {
-        logWarnRender('renderIsPower', 'Элемент "isPower" не найден или отсутствует в');
+        console.log('[renderIsPower] Элемент "isPower" не найден или отсутствует в', settingsPath);
     }
 }
 
@@ -305,7 +283,7 @@ function renderIsDark() {
         console.log('[renderIsDark] Темная версия сайта:', currentSettings.isDark)     
         rid.selected = currentSettings.isDark;
     } else {
-        logWarnRender('renderIsDark', 'Элемент "isDark" не найден или отсутствует в');
+        console.log('[renderIsDark] Элемент "isDark" не найден или отсутствует в', settingsPath);
     }
 }
 
@@ -332,7 +310,7 @@ function renderFieldDimsX() {
         console.log('[renderFieldDimsX] Размер "X":', currentSettings.dimsX);
         rfdx.value = currentSettings.dimsX;
     } else {
-        logWarnRender('renderFieldDimsX', 'Элемент "dimsX" не найден или отсутствует в');
+        console.log('[renderFieldDimsX] Элемент "dimsX" не найден или отсутствует в', settingsPath);
     }
 }
 
@@ -357,7 +335,7 @@ function renderFieldDimsY() {
         console.log('[renderFieldDimsY] Размер "Y":', currentSettings.dimsY);
         rfdy.value = currentSettings.dimsY;
     } else {
-        logWarnRender('renderFieldDimsY', 'Элемент "dimsY" не найден или отсутствует в');
+        console.log('[renderFieldDimsY] Элемент "dimsY" не найден или отсутствует в', settingsPath);
     }
 }
 
@@ -382,7 +360,7 @@ function renderFieldDimsA() {
         console.log('[renderFieldDimsA] Дополнительный размер "A":', currentSettings.dimsA);
         rfda.value = currentSettings.dimsA;
     } else {
-        logWarnRender('renderFieldDimsA', 'Элемент "dimsA" не найден или отсутствует в');
+        console.log('[renderFieldDimsA] Элемент "dimsA" не найден или отсутствует в', settingsPath);
     }
 }
 
@@ -406,7 +384,7 @@ function renderFieldDimsB() {
         console.log('[renderFieldDimsB] Дополнительный размер "B":', currentSettings.dimsB);
         rfdb.value = currentSettings.dimsB;
     } else {
-        logWarnRender('renderFieldDimsB', 'Элемент "dimsB" не найден или отсутствует в');
+        console.log('[renderFieldDimsB] Элемент "dimsB" не найден или отсутствует в', settingsPath);
     }
 }
 
@@ -430,8 +408,53 @@ function renderFieldPixelSize() {
         console.log('[renderFieldPixelSize] Размер кластера ленты:', currentSettings.pixelSize);
         rfps.value = currentSettings.pixelSize;
     } else {
-        logWarnRender('renderFieldPixelSize', 'Элемент "pixelSize" не найден или отсутствует в');
+        console.log('[renderFieldPixelSize] Элемент "pixelSize" не найден или отсутствует в', settingsPath);
     }
+}
+
+/**
+ * Функция отображения поля выбора `patternId`
+ */
+function renderSelectPatternId() {
+    const rspi = document.getElementById('selectPatternId');
+    if (!rspi) {
+        console.error('[renderSelectPatternId] Элемент с id="selectPatternId" не существует');
+        return;
+    }
+    if (currentSettings.patternID !== undefined) {
+        console.log('[renderSelectPatternId] ID рисунка:', currentSettings.patternID);
+        const patternMap = {
+            1: 'яблоко',
+            2: 'груша',
+            3: 'лимон',
+            4: 'апельсин'
+        };
+        const targetValue = patternMap[currentSettings.patternID];
+        rspi.value = targetValue;
+    } else {
+        console.log('[renderSelectPatternId] Элемент "patternID" не найден или отсутствует в', settingsPath);
+    }
+}
+
+
+
+function setupListeners() {
+    dimsXListener();
+    patternIdListener();
+}
+
+
+function dimsXListener() {
+    if (!fieldDimsX) return;
+    fieldDimsX.addEventListener('input', (e) => {
+        currentSettings.dimsX = parseInt(e.target.value);
+        syncUI();
+    });
+}
+
+
+function patternIdListener() {
+    
 }
 
 
@@ -441,6 +464,20 @@ function renderFieldPixelSize() {
 
 
 
+
+function syncUI() {
+    const isX = checkDimsX();
+    //const isY = checkDimsY();
+    //const isExtra = currentSettings.patternID > 3;
+    
+    //toggleExtraDims(isExtra);
+    
+    //const isA = isExtra ? checkDimsA() : true;
+    //const isB = isExtra ? checkDimsB() : true;
+    
+    //uiStateSaveButton(isX && isY && isA && isB);
+    uiStateSaveButton(isX);
+}
 
 
 
@@ -509,22 +546,29 @@ async function initApp() {
 
 
 
-
 document.addEventListener('DOMContentLoaded', async () => {
     // Сначала проверяем DOM
     if (!validateDOMElements()) {
         console.error('[Root] Критическая ошибка: отсутствуют необходимые DOM элементы. Работа приложения невозможна.');
         return;
     }
-    
+
     // Загружаем настройки
     await initApp();
+    if (!currentSettings) {
+        console.error('[Root] Настройки не загружены. Работа невозможна.');
+        return;
+    }
     
     if (currentSettings) {
         renderAll();
-        checkDimsXDivisibility();
-        checkDimsYDivisibility();
-        toggleExtraDims();
+        syncUI();
+        dimsXListener();
+        setupListeners();
     }
+
+    
 });
+
+
 

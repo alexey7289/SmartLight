@@ -1,13 +1,13 @@
 {
-    "version": "0.0.04",
+    "version": "0.0.05",
     "isPower": true,
     "isDark": false,
-    "dimsX": 200,
+    "dimsX": 201,
     "dimsY": 150,
     "dimsA": 110,
     "dimsB": 289,
     "pixelSize": 10,
-    "patternID": 4,
+    "patternID": 3,
 
 
 

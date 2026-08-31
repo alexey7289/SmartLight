@@ -32,34 +32,47 @@
 
     <h1>SmartLight <span><sup id="appVersion">Загрузка...</sup></span></h1>
         
-    
-
-    <div>
-        <label for="toggleIsDark">Темная тема</label>
-        <md-switch id="toggleIsDark"></md-switch>
-    </div>
-    
-    <br><br>
-
-
+    <label for="toggleIsDark">Темная тема</label>
+    <md-switch id="toggleIsDark"></md-switch>
+       	<br>
+		<br>
 	<md-outlined-text-field id="fieldDimsX" label="Размер X" value="20" max="10000" min="5" type="number" no-spinner error-text="Ошибка"></md-outlined-text-field>
 	<md-outlined-text-field id="fieldDimsY" label="Размер Y" value="20" max="10000" min="5" type="number" no-spinner error-text="Ошибка"></md-outlined-text-field>
 	<md-outlined-text-field id="fieldDimsA" label="Размер A" value="20" max="10000" min="5" type="number" no-spinner error-text="Ошибка"></md-outlined-text-field>
 	<md-outlined-text-field id="fieldDimsB" label="Размер B" value="20" max="10000" min="5" type="number" no-spinner error-text="Ошибка"></md-outlined-text-field>
 	<md-outlined-text-field id="fieldPixelSize" label="Размер пикселя" value="20" max="10000" min="5" type="number" no-spinner error-text="Ошибка"></md-outlined-text-field>
-
+		<br>
+		<br>
+	<md-outlined-button id="btnSaveDims">
+		Сохранить
+	</md-outlined-button>
+	<br>
+	<br>
+	<md-outlined-select id="selectPatternId"
+		label="Рисунок">
+		<md-select-option value="яблоко"><div slot="headline">1. Яблоко</div></md-select-option>
+    	<md-select-option value="груша"><div slot="headline">2. Груша</div></md-select-option>
+		<md-select-option value="лимон"><div slot="headline">3. Лимон</div></md-select-option>
+    	<md-select-option value="апельсин"><div slot="headline">4. Апельсин</div></md-select-option>
+	</md-outlined-select>
+	<br>
+	<br>
+	<div style="margin-top: 20px;"></div>
 	<md-outlined-text-field 
 		id="logField" 
 		label="Логи приложения" 
 		type="textarea"
-		rows="5">
+		rows="5"
+		style="width: 575px;">
 	</md-outlined-text-field>
+	<br>
+	<br>
 	<md-outlined-button id="btnClearLog" onclick="document.getElementById('logField').reset()">
     	Очистить лог
 	</md-outlined-button>
     
-    <br><br>
-
+    <br>
+	<div style="margin-top: 20px;"></div>
     <md-fab variant="tertiary" lowered id="toggleIsPower" >
         <md-icon slot="icon">lightbulb</md-icon>
     </md-fab>
