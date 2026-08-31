@@ -439,6 +439,28 @@ function renderSelectPatternId() {
 
 
 
+/**
+ * Сохраняет текущие настройки в localStorage
+ * @returns {boolean} true если успешно сохранено
+ */
+function sendSettingsToLocalStorage() {
+    try {
+        // Исправлено: setItem вместо sendItem, currentSettings вместо settings
+        localStorage.setItem('smartLightSettings', JSON.stringify(currentSettings));
+        console.log('[sendSettingsToLocalStorage] Настройки сохранены в localStorage');
+        addLog('Настройки сохранены в локальную память', false); // Опционально: вывод в лог на странице
+        return true;
+    } catch (error) {
+        console.error('[sendSettingsToLocalStorage] Ошибка:', error);
+        addLog('Ошибка сохранения в локальную память', true);
+        return false;
+    }
+}
+
+
+
+
+
 async function sendSettingsToController() {
     try {
         console.log('[sendSettingsToController] Отправка настроек на контроллер...');
@@ -480,7 +502,6 @@ function dimsXListener() {
     fieldDimsX.addEventListener('blur', (e) => {
         currentSettings.dimsX = parseInt(e.target.value);
         syncUI();
-        sendSettingsToController();
     });
 }
 
@@ -491,7 +512,8 @@ function patternIdListener() {
         currentSettings.patternID = parseInt(e.target.value);
         console.log('Выбран pattern', currentSettings.patternID);
         syncUI();
-        sendSettingsToController();
+        //sendSettingsToController();
+        sendSettingsToLocalStorage();
     });
 }
 
