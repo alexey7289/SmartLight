@@ -438,6 +438,37 @@ function renderSelectPatternId() {
 
 
 
+
+async function sendSettingsToController() {
+    try {
+        console.log('[sendSettingsToController] Отправка настроек на контроллер...');
+
+        const response = await fetch('/save', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(currentSettings) 
+        });
+        if (!response.ok) {
+            console.error('[sendSettingsToController] Ошибка HTTP:', response.status);
+            addLog(`Ошибка отправки: HTTP ${response.status}`, true);
+            return false;
+        }
+        console.log('[sendSettingsToController] Успешно отправлено на контроллер')
+        addLog('Настройки отправлены на контроллер', false);
+        return true;
+    } catch (error) {
+        console.error('[sendSettingsToController] Сетевая ошибка:', error);
+        addLog('Ошибка связи с ESP32', true);
+        return false;
+
+    }
+}
+
+
+
+
 function setupListeners() {
     dimsXListener();
     patternIdListener();
@@ -446,15 +477,22 @@ function setupListeners() {
 
 function dimsXListener() {
     if (!fieldDimsX) return;
-    fieldDimsX.addEventListener('input', (e) => {
+    fieldDimsX.addEventListener('blur', (e) => {
         currentSettings.dimsX = parseInt(e.target.value);
         syncUI();
+        sendSettingsToController();
     });
 }
 
 
 function patternIdListener() {
-    
+    if (!selectPatternId) return;
+    selectPatternId.addEventListener('change', (e) => {
+        currentSettings.patternID = parseInt(e.target.value);
+        console.log('Выбран pattern', currentSettings.patternID);
+        syncUI();
+        sendSettingsToController();
+    });
 }
 
 
