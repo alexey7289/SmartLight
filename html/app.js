@@ -1,8 +1,30 @@
 //app.js
 
-let currentSettings = null;
-const settingsPath = './config/settings.json';
+// Глобальный фикс бага Material Web Components для Chromium
+(function() {
+    const originalAnimate = Element.prototype.animate;
+    Element.prototype.animate = function(keyframes, options) {
+        if (Array.isArray(keyframes)) {
+            keyframes.forEach(keyframe => {
+                // Если библиотека пытается передать пустое значение для анимации notch/outline
+                if (keyframe.width === '') {
+                    keyframe.width = 'auto'; // Заменяем недопустимую пустую строку на корректное 'auto'
+                }
+            });
+        }
+        return originalAnimate.call(this, keyframes, options);
+    };
+})();
 
+
+// false — Режим разработки (работа с файлом JSON + localStorage)
+// true  — Режим продакшена (работа с реальным контроллером ESP32)
+const DEBUG_MODE = true; 
+
+let currentSettings = null;
+const settingsPath = DEBUG_MODE ? './config/settings.json' : '/get-settings';
+
+console.log(`%c[DEBUG] Приложение запущено. Режим DEBUG_MODE: ${DEBUG_MODE}. Путь к конфигу: ${settingsPath}`, 'background: yellow; color: red; font-weight: bold;');
 
 
 /**
@@ -48,7 +70,7 @@ function validateDOMElements() {
         return false;
     }
 
-    console.log('[validateDOMElements] Все DOM-элементы найдены');
+    //console.log('[validateDOMElements] Все DOM-элементы найдены');
     return true;
 }
 
@@ -221,7 +243,7 @@ function renderVersion() {
         return;
     }
     if (currentSettings.version !== undefined) {
-        console.log('[renderVersion] Версия веб-сервера:', currentSettings.version);
+        //console.log('[renderVersion] Версия веб-сервера:', currentSettings.version);
         rv.textContent = `v${currentSettings.version}`;       
     } else {
         console.log('[renderVersion] Элемент "version" не найден или отсутствует в', settingsPath);
@@ -248,7 +270,7 @@ function renderIsPower() {
     }
     const iconElement = fabButton.querySelector('md-icon') || document.getElementById('toggleIsPower');
     if (currentSettings.isPower !== undefined) {
-        console.log('[renderIsPower] Питание ленты:', currentSettings.isPower);
+        //console.log('[renderIsPower] Питание ленты:', currentSettings.isPower);
         if (currentSettings.isPower) {
             fabButton.setAttribute('variant', 'primary');
             if (iconElement) iconElement.textContent = 'lightbulb';
@@ -280,7 +302,7 @@ function renderIsDark() {
         return;
     }
     if (currentSettings.isDark !== undefined) {
-        console.log('[renderIsDark] Темная версия сайта:', currentSettings.isDark)     
+        //console.log('[renderIsDark] Темная версия сайта:', currentSettings.isDark)     
         rid.selected = currentSettings.isDark;
     } else {
         console.log('[renderIsDark] Элемент "isDark" не найден или отсутствует в', settingsPath);
@@ -307,7 +329,7 @@ function renderFieldDimsX() {
         return;
     }
     if (currentSettings.dimsX !== undefined) {
-        console.log('[renderFieldDimsX] Размер "X":', currentSettings.dimsX);
+        //console.log('[renderFieldDimsX] Размер "X":', currentSettings.dimsX);
         rfdx.value = currentSettings.dimsX;
     } else {
         console.log('[renderFieldDimsX] Элемент "dimsX" не найден или отсутствует в', settingsPath);
@@ -332,7 +354,7 @@ function renderFieldDimsY() {
         return;
     }
     if (currentSettings.dimsY !== undefined) {
-        console.log('[renderFieldDimsY] Размер "Y":', currentSettings.dimsY);
+        //console.log('[renderFieldDimsY] Размер "Y":', currentSettings.dimsY);
         rfdy.value = currentSettings.dimsY;
     } else {
         console.log('[renderFieldDimsY] Элемент "dimsY" не найден или отсутствует в', settingsPath);
@@ -357,7 +379,7 @@ function renderFieldDimsA() {
         return;
     }
     if (currentSettings.dimsA !== undefined) {
-        console.log('[renderFieldDimsA] Дополнительный размер "A":', currentSettings.dimsA);
+        //console.log('[renderFieldDimsA] Дополнительный размер "A":', currentSettings.dimsA);
         rfda.value = currentSettings.dimsA;
     } else {
         console.log('[renderFieldDimsA] Элемент "dimsA" не найден или отсутствует в', settingsPath);
@@ -381,7 +403,7 @@ function renderFieldDimsB() {
         return;
     }
     if (currentSettings.dimsB !== undefined) {
-        console.log('[renderFieldDimsB] Дополнительный размер "B":', currentSettings.dimsB);
+        //console.log('[renderFieldDimsB] Дополнительный размер "B":', currentSettings.dimsB);
         rfdb.value = currentSettings.dimsB;
     } else {
         console.log('[renderFieldDimsB] Элемент "dimsB" не найден или отсутствует в', settingsPath);
@@ -405,7 +427,7 @@ function renderFieldPixelSize() {
         return;
     }
     if (currentSettings.pixelSize !== undefined) {
-        console.log('[renderFieldPixelSize] Размер кластера ленты:', currentSettings.pixelSize);
+        //console.log('[renderFieldPixelSize] Размер кластера ленты:', currentSettings.pixelSize);
         rfps.value = currentSettings.pixelSize;
     } else {
         console.log('[renderFieldPixelSize] Элемент "pixelSize" не найден или отсутствует в', settingsPath);
@@ -421,16 +443,11 @@ function renderSelectPatternId() {
         console.error('[renderSelectPatternId] Элемент с id="selectPatternId" не существует');
         return;
     }
+    
     if (currentSettings.patternID !== undefined) {
-        console.log('[renderSelectPatternId] ID рисунка:', currentSettings.patternID);
-        const patternMap = {
-            1: 'яблоко',
-            2: 'груша',
-            3: 'лимон',
-            4: 'апельсин'
-        };
-        const targetValue = patternMap[currentSettings.patternID];
-        rspi.value = targetValue;
+        // .toString() преобразует число 3 в строку "3", которая совпадет с value="3" в HTML
+        rspi.value = currentSettings.patternID.toString();
+        //console.log('[renderSelectPatternId] Установлен ID рисунка:', currentSettings.patternID);
     } else {
         console.log('[renderSelectPatternId] Элемент "patternID" не найден или отсутствует в', settingsPath);
     }
@@ -564,36 +581,69 @@ function syncUI() {
  */
 async function initApp() {
     console.log('%c[initApp] Инициализация приложения...', 'background: yellow; color: #2196F3; font-weight: bold;');
-    console.log('[initApp] Запрос настроек из ./config/settings.json');
-    addLog('[initApp] Запрос настроек из ./config/settings.json', false);
+    
+    // ==========================================
+    // ВЕТКА А: РЕЖИМ ОТЛАДКИ (DEBUG_MODE = true)
+    // ==========================================
+    if (DEBUG_MODE) {
+        console.log('[initApp] [DEBUG] Работаем в режиме отладки.');
+        const cachedSettings = localStorage.getItem('smartLightSettings');
+        
+        // 1. Первая попытка: берем из кэша браузера
+        if (cachedSettings) {
+            try {
+                currentSettings = JSON.parse(cachedSettings);
+                console.log('[initApp] [DEBUG] Настройки УСПЕШНО загружены из localStorage!');
+                addLog('Настройки загружены из локальной памяти (DEBUG)', false);
+                return; // Всё ок, выходим
+            } catch (e) {
+                console.error('[initApp] [DEBUG] Кэш поврежден, сбрасываем и берем файл.', e);
+                localStorage.removeItem('smartLightSettings');
+            }
+        }
+        
+        // 2. Вторая попытка (если кэш пуст): строго скачиваем дефолтный JSON-файл
+        console.log(`[initApp] [DEBUG] Кэш пуст. Загружаем дефолтный файл по адресу: ${settingsPath}`);
+        try {
+            const response = await fetch(settingsPath);
+            if (!response.ok) throw new Error(`Статус сервера: ${response.status}`);
+            
+            currentSettings = await response.json();
+            console.log('[initApp] [DEBUG] Дефолтные настройки успешно загружены из JSON-файла!');
+            addLog('Загружены дефолтные настройки из файла', false);
+            return; // Всё ок, выходим
+        } catch (error) {
+            console.error('[initApp] [DEBUG] Не удалось загрузить даже дефолтный JSON:', error);
+            addLog('Критическая ошибка: файл настроек недоступен', true);
+            return;
+        }
+    }
+
+    // ==========================================
+    // ВЕТКА Б: РЕЖИМ ПРОДАКШЕНА (DEBUG_MODE = false)
+    // ==========================================
+    console.log(`[initApp] [PROD] Запрос актуальных настроек с контроллера: ${settingsPath}`);
+    addLog(`Запрос настроек из ESP32 (${settingsPath})`, false);
 
     try {
-        // Запрашиваем файл настроек
-        const response = await fetch (settingsPath);
+        const response = await fetch(settingsPath);
 
-        // Проверяем, что сервер успешно отдал файл
         if (!response.ok) {
-            console.error('[initApp] Ошибка чтения файла ./config/settings.json');
-            addLog('[initApp] Ошибка чтения файла ./config/settings.json', true);
-            return; // Выходим из фукции если файл не прочитался
+            console.error(`[initApp] [PROD] Ошибка контроллера. Статус: ${response.status}`);
+            addLog(`ESP32 вернул ошибку: HTTP ${response.status}`, true);
+            return; 
         }
 
-        // Разгружаем все содержимое в currentSettings
         currentSettings = await response.json();
-
-        console.log('[initApp] Настройки успешно загружены');
-        addLog('[initApp] Настройки успешно загружены', false);
-        // Вывод в консоль содержимого файла в виде таблицы
-        //console.table(currentSettings);
-
-        // Вызов функции для перерисовки всего интерфейса
-        //renderAll();
-
+        console.log(`[initApp] [PROD] Настройки успешно получены от ESP32!`);
+        addLog('Настройки успешно загружены с контроллера', false);
 
     } catch (error) {
-        console.error('[initApp] Сетевая ошибка');
+        console.error('[initApp] [PROD] Критическая сетевая ошибка связи с ESP32:', error);
+        addLog('Ошибка связи с контроллером', true);
     }
 }
+
 
 
 
