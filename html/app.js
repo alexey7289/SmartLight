@@ -1,22 +1,5 @@
 //app.js
 
-// Глобальный фикс бага Material Web Components для Chromium
-(function() {
-    const originalAnimate = Element.prototype.animate;
-    Element.prototype.animate = function(keyframes, options) {
-        if (Array.isArray(keyframes)) {
-            keyframes.forEach(keyframe => {
-                // Если библиотека пытается передать пустое значение для анимации notch/outline
-                if (keyframe.width === '') {
-                    keyframe.width = 'auto'; // Заменяем недопустимую пустую строку на корректное 'auto'
-                }
-            });
-        }
-        return originalAnimate.call(this, keyframes, options);
-    };
-})();
-
-
 // false — Режим разработки (работа с файлом JSON + localStorage)
 // true  — Режим продакшена (работа с реальным контроллером ESP32)
 const DEBUG_MODE = true; 
@@ -456,6 +439,22 @@ function renderSelectPatternId() {
 
 
 
+
+/**
+ * Универсальная функция сохранения настроек.
+ * Автоматически выбирает localStorage или контроллер в зависимости от режима.
+ * @async
+ * @returns {Promise<boolean>} true, если сохранение прошло успешно
+ */
+async function saveSettings() {
+    if (DEBUG_MODE) {
+        return sendSettingsToLocalStorage();
+    } else {
+        return await sendSettingsToController();
+    }
+}
+
+
 /**
  * Сохраняет текущие настройки в localStorage
  * @returns {boolean} true если успешно сохранено
@@ -511,6 +510,7 @@ async function sendSettingsToController() {
 function setupListeners() {
     dimsXListener();
     patternIdListener();
+    saveButtonListener();
 }
 
 
@@ -529,11 +529,26 @@ function patternIdListener() {
         currentSettings.patternID = parseInt(e.target.value);
         console.log('Выбран pattern', currentSettings.patternID);
         syncUI();
-        //sendSettingsToController();
-        sendSettingsToLocalStorage();
+        sendSettingsToController();
+        //sendSettingsToLocalStorage();
     });
 }
 
+
+function saveButtonListener() {
+    if (!btnSaveDims) return;
+    
+    btnSaveDims.addEventListener('click', async () => {
+        btnSaveDims.disabled = true; // Блокируем кнопку на время сохранения
+        const success = await saveSettings();
+        if (success) {
+            addLog('Все настройки успешно сохранены!', false);
+        } else {
+            addLog('Не удалось сохранить настройки', true);
+        }
+        btnSaveDims.disabled = false;
+    });
+}
 
 
 

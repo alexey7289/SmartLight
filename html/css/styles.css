@@ -53,19 +53,3 @@
 :root {
 	--md-fab-icon-size: 36px;
 }
-
-/* Полное отключение анимации расчета ширины выреза (notch) */
-/* для текстовых полей и выпадающих списков */
-md-outlined-text-field::part(outline),
-md-outlined-text-field::part(notch),
-md-outlined-select::part(outline),
-md-outlined-select::part(notch) {
-  transition: none !important;
-  animation: none !important;
-}
-
-/* Гасим внутренние CSS-переменные Chromium, отвечающие за плавный сдвиг label */
-md-outlined-text-field, md-outlined-select {
-  --md-outlined-field-label-text-transition: none !important;
-  --md-outlined-text-field-label-text-transition: none !important;
-}
