@@ -15,11 +15,12 @@ console.log(`%c[DEBUG] Приложение запущено. Режим DEBUG_M
  * Находит элементы по их ID и сохраняет ссылки в глобальные переменные.
  * 
  * @returns {boolean} 
- *   - true:  все элементы найдены, глобальные переменные заполнены, 
- *            приложение может работать дальше.
- *   - false: один или несколько элементов отсутствуют. 
- *            В консоль выведен список недостающих ID.
- *            Точка входа (DOMContentLoaded) должна прервать дальнейшее выполнение.
+ *   - `true`:  все элементы найдены, глобальные переменные заполнены, 
+ *              приложение может работать дальше.
+ *   - `false`: один или несколько элементов отсутствуют. 
+ *              В консоль выведен список недостающих ID.
+ *              Точка входа (DOMContentLoaded) должна прервать дальнейшее
+ *              выполнение.
  */
 function validateDOMElements() {
     appVersion = document.getElementById('appVersion');
@@ -75,8 +76,8 @@ function validateDOMElements() {
  * Если поле логирования не найдено (`logField === null`), функция завершается без действий.
  * 
  * @param {string} message - Текст сообщения для вывода в лог.
- * @param {boolean} [isError=false] - Флаг ошибки. Если true, добавляется префикс `[ERROR]`,
- *                                    иначе `[INFO]`.
+ * @param {boolean} [isError=false] - Флаг ошибки. Если `true`, добавляется
+ *                                    префикс `[ERROR]`, иначе `[INFO]`.
  * @example
  *   addLog('Настройки загружены');                    // [INFO]
  *   addLog('Файл не найден', true);                   // [ERROR]
@@ -96,10 +97,13 @@ function addLog(message, isError = false) {
 
 
 
-
+// =========================== Поле "Размер Х" ===============================
 /**
- * Проверяет кратность данных в поле `dimsX` к `pixelSize`
- * @returns {boolean} `true` - если делится без остатка
+ * Проверяет делимость без остатка данных поля `dimsX` к `pixelSize`
+ * 
+ * @returns {boolean}
+ * - `false` - если данные из `currentSettings` не загрузились
+ * - `true` - если делится без остатка
  */
 function isDimsXValid() {
     if (!currentSettings) {
@@ -109,11 +113,24 @@ function isDimsXValid() {
     return currentSettings.dimsX % currentSettings.pixelSize === 0;
 }
 
-
-
-
 /**
- * Отрисовывает статус поля ввода размера `dimsX` в зависимости от переданного флага.
+ * Передает флаг `isValid` в `uiStateDimsX()` для отрисовки поля
+ * ввода с ошибкой `error` или с текстом `supportingText`.
+ * 
+ * @returns {boolean} Результат проверки:
+ * - `false`, если `isDimsXValid()` вернула `false`.
+ * - `true`, если `isDimsXValid()` вернула `true`.
+ */
+function checkDimsX() {
+    const isValid = isDimsXValid();
+    uiStateDimsX(isValid);
+    return isValid;
+}
+/**
+ * Отрисовывает статус поля ввода размера `dimsX` в зависимости
+ * от переданного флага.
+ * 
+ * @param {boolean} isValid - флаг передаваемый от `checkDimsX()` 
  */
 function uiStateDimsX(isValid) {
     if (!fieldDimsX) return;
@@ -128,11 +145,34 @@ function uiStateDimsX(isValid) {
 }
 
 
-
-
-function checkDimsX() {
-    const isValid = isDimsXValid();
-    uiStateDimsX(isValid);
+/**
+ * Проверяет кратность данных в поле `dimsY` к `pixelSize`
+ * @returns {boolean} `true` если делится без остатка
+ */
+function isDimsYValid() {
+    if (!currentSettings) {
+        console.error(`[isDimsYValid] Данные из ${settingsPath} не загрузились.`);
+        return false;
+    }
+    return currentSettings.dimsY % currentSettings.pixelSize === 0;
+}
+/**
+ * Отрисовывает статус поля ввода размера `dimsY` в зависимости от переданного флага.
+ */
+function uiStateDimsY(isValid) {
+    if (!fieldDimsY) return;
+    const pixelCount = currentSettings.dimsY / currentSettings.pixelSize;
+    if (isValid) {
+        fieldDimsY.supportingText = `OK. ${pixelCount} пикселей`;
+        fieldDimsY.error = false;
+    } else {
+        fieldDimsY.error = true;
+        fieldDimsY.errorText = 'Не делится';
+    }
+}
+function checkDimsY() {
+    const isValid = isDimsYValid();
+    uiStateDimsY(isValid);
     return isValid;
 }
 
@@ -149,15 +189,12 @@ function checkDimsX() {
 
 
 
-
-
-
-function uiStateSaveButton(isX) {
+function uiStateSaveButton(isX, isY) {
     if (btnSaveDims) {
-        btnSaveDims.disabled = !isX;
+        // Кнопка заблокирована (disabled = true), если Х или Y равны false
+        btnSaveDims.disabled = !(isX && isY);
     }
 }
-
 
 
 
@@ -509,6 +546,7 @@ async function sendSettingsToController() {
 
 function setupListeners() {
     dimsXListener();
+    dimsYListener();
     patternIdListener();
     saveButtonListener();
 }
@@ -521,6 +559,14 @@ function dimsXListener() {
         syncUI();
     });
 }
+function dimsYListener() {
+    if (!fieldDimsY) return;
+    fieldDimsY.addEventListener('blur', (e) => {
+        currentSettings.dimsY = parseInt(e.target.value);
+        syncUI();
+    });
+}
+
 
 
 function patternIdListener() {
@@ -540,6 +586,7 @@ function saveButtonListener() {
     
     btnSaveDims.addEventListener('click', async () => {
         btnSaveDims.disabled = true; // Блокируем кнопку на время сохранения
+        btnSaveDims.textContent = "Отправка..."; // Меняем текст кнопки на время сохранения
         const success = await saveSettings();
         if (success) {
             addLog('Все настройки успешно сохранены!', false);
@@ -547,6 +594,7 @@ function saveButtonListener() {
             addLog('Не удалось сохранить настройки', true);
         }
         btnSaveDims.disabled = false;
+        btnSaveDims.textContent = "Сохранить" // Возво=ращаем текст кнопки на первоначальный
     });
 }
 
@@ -559,7 +607,7 @@ function saveButtonListener() {
 
 function syncUI() {
     const isX = checkDimsX();
-    //const isY = checkDimsY();
+    const isY = checkDimsY();
     //const isExtra = currentSettings.patternID > 3;
     
     //toggleExtraDims(isExtra);
@@ -568,9 +616,8 @@ function syncUI() {
     //const isB = isExtra ? checkDimsB() : true;
     
     //uiStateSaveButton(isX && isY && isA && isB);
-    uiStateSaveButton(isX);
+    uiStateSaveButton(isX, isY);
 }
-
 
 
 
@@ -688,7 +735,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (currentSettings) {
         renderAll();
         syncUI();
-        dimsXListener();
         setupListeners();
     }
 
