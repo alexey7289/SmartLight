@@ -77,12 +77,16 @@ const IS_PRODUCTION = false;
 * *valid-функции* - математика и вычисления. Управляют состоянием `UI-функций`.
 	* *isDimsXValid()* — проверяет, делится ли установленное значение `dimsX` на `pixelSize` без остатка. Требует наличия объекта `currentSettings`.
 	* *isDimsYValid()* — аналогична `isDimsXValid()` но проверяет делимость `dimsY` на `pixelSize`.
+	* *isDimsAValid()* — аналогична `isDimsXValid()` но проверяет делимость `dimsA` на `pixelSize`.
+	* *isDimsBValid()* — аналогична `isDimsXValid()` но проверяет делимость `dimsB` на `pixelSize`.
 
 
 |Функция						|Описание									|Вызывается						|Возвращает					|
 |:------------------------------|:------------------------------------------|:------------------------------|:--------------------------|
 |`isDimsXValid()`				|Проверка кратности `DimsX` к `pixelSize` 	|Внутри `checkDimsX()`	 		|`boolean`					|
-|`isDimsYValid()`				|Проверка кратности `DimsY` к `pixelSize` 	|Внутри `checkDimsX()`	 		|`boolean`					|
+|`isDimsYValid()`				|Проверка кратности `DimsY` к `pixelSize` 	|Внутри `checkDimsY()`	 		|`boolean`					|
+|`isDimsAValid()`				|Проверка кратности `DimsA` к `pixelSize` 	|Внутри `checkDimsA()`	 		|`boolean`					|
+|`isDimsBValid()`				|Проверка кратности `DimsB` к `pixelSize` 	|Внутри `checkDimsB()`	 		|`boolean`					|
 
 
 
@@ -90,25 +94,34 @@ const IS_PRODUCTION = false;
 * *check-функции* - связывают Valid и UI-функции.
 	* *checkDimsX()* - проверяет `DimsX`, и управляет какое сообщение выводить под полем ввода в UI через функцию `uiStateDimsX(isValid)` и возвращает результат проверки `boolean`.
 	* *checkDimsY()* - аналогична `checkDimsX()` только для поля ввода `DimsY`.
+	* *checkDimsA()* - аналогична `checkDimsX()` только для поля ввода `DimsA`.
+	* *checkDimsB()* - аналогична `checkDimsX()` только для поля ввода `DimsB`.
 
 |Функция						|Описание									|Вызывается						|Возвращает					|
 |:------------------------------|:------------------------------------------|:------------------------------|:--------------------------|
 |`checkDimsX()`					|Проверяет `DimsX` и обновляет UI поле		|Внутри `syncUI()`	 			|`boolean` 					|
 |`checkDimsY()`					|Проверяет `DimsY` и обновляет UI поле		|Внутри `syncUI()`	 			|`boolean` 					|
+|`checkDimsA()`					|Проверяет `DimsA` и обновляет UI поле		|Внутри `syncUI()`	 			|`boolean` 					|
+|`checkDimsB()`					|Проверяет `DimsB` и обновляет UI поле		|Внутри `syncUI()`	 			|`boolean` 					|
+
 
 
 ### UI
 * *UI-функции* - это процесс изменения внешнего вида элементов в зависимости от логики, валидации или правил приложения.
 	* *uiStateDimsX(isValid)* — меняет вспомогательный текст поля `fieldDimsX` на количество рассчитанных пикселей при `true` или включает режим ошибки `error = true` со значением `Не делится` при `false`.
-	* *uiStateDimsX(isValid)* — аналогична `uiStateDimsX()` только для вспомогательного текста поля `fieldDimsY`.
-	* *uiStateSaveButton(isX)* — блокирует или разблокирует кнопку сохранения параметров на основе переданного флага валидности.
-	* *toggleExtraDims()* — функция переключения видимости полей `DimsA` и `DimsB`. Если `patternID > 3`, поля отображаются (через `display = ''`), иначе скрываются (`display = 'none'`).
+	* *uiStateDimsY(isValid)* — аналогична `uiStateDimsX()` только для вспомогательного текста поля `fieldDimsY`.
+	* *uiStateDimsA(isValid)* — аналогична `uiStateDimsX()` только для вспомогательного текста поля `fieldDimsA`.
+	* *uiStateDimsB(isValid)* — аналогична `uiStateDimsX()` только для вспомогательного текста поля `fieldDimsB`.
+	* *uiStateSaveButton(isX)* — блокирует или разблокирует кнопку сохранения параметров на основе переданного флага валидности от `syncUI()`.
+	* *toggleExtraDims()* — функция переключения видимости полей `DimsA` и `DimsB`. Если `patternID <= 3`, поля отображаются (через `display = ''`), иначе скрываются (`display = 'none'`).
 
 |Функция						|Описание									|Вызывается						|Возвращает					|
 |:------------------------------|:------------------------------------------|:------------------------------|:--------------------------|
 |`uiStateDimsX(isValid)`		|Статус `DimsX` на основе флага `isValid`	|Внутри `checkDimsX()`			|`void`						|
 |`uiStateDimsY(isValid)`		|Статус `DimsY` на основе флага `isValid`	|Внутри `checkDimsY()`			|`void`						|
-|`uiStateSaveButton(isX)` 		|Статус кнопки "Сохранить" (disabled)		|Внутри `syncUI()`				|`void` 					|
+|`uiStateDimsA(isValid)`		|Статус `DimsA` на основе флага `isValid`	|Внутри `checkDimsA()`			|`void`						|
+|`uiStateDimsB(isValid)`		|Статус `DimsB` на основе флага `isValid`	|Внутри `checkDimsB()`			|`void`						|
+|`uiStateSaveButton(isValid)`	|Статус кнопки "Сохранить" (disabled)		|Внутри `syncUI()`				|`void` 					|
 |`toggleExtraDims()`			|Переключение видимости полей DimsA и DimsB	|Доступна глобально				|`boolean` 					|
 
 
@@ -119,12 +132,20 @@ const IS_PRODUCTION = false;
 * *listeners-функции* - инициализация прослушивания действий пользователя.
 	* *setupListeners()* — агрегатор для одновременной инициализации всех имеющихся слушателей событий на элементах интерфейса.
 	* *dimsXListener()* — вешает событие `blur` (потеря фокуса) на поле `fieldDimsX`. Парсит значение в `int`, обновляет `currentSettings.dimsX` и запускает `syncUI()`.
-	* *patternIdListener()* — вешает событие `change` на выпадающий список `selectPatternId`. Обновляет `currentSettings.patternID`, запускает синхронизацию интерфейса и записывает новые данные в локальное хранилище.
+	* *dimsYListener()* — аналогична `dimsXListener()` но вешает событие `blur` (потеря фокуса) на поле `fieldDimsY`.
+	* *dimsAListener()* — аналогична `dimsXListener()` но вешает событие `blur` (потеря фокуса) на поле `fieldDimsA`.
+	* *dimsBListener()* — аналогична `dimsXListener()` но вешает событие `blur` (потеря фокуса) на поле `fieldDimsB`.
+	* *patternIdListener()* — вешает событие `change` на выпадающий список `selectPatternId`. ункция является асинхронной: обновляет `currentSettings.patternID`, запускает синхронизацию интерфейса и  автоматически сохраняет данные через await `saveSettings()`.
+
+	вешает событие change на выпадающий список selectPatternId. Функция является асинхронной: обновляет currentSettings.patternID, запускает синхронизацию интерфейса и автоматически сохраняет данные через await saveSettings()
 
 |Функция						|Описание									|Вызывается								|Возвращает					|
 |:------------------------------|:------------------------------------------|:--------------------------------------|:--------------------------|
 |`setupListeners()`				|Инициализация всех слушателей приложения	|При старте (`DOMContentLoaded`)		|`void`						|
 |`dimsXListener()`				|Слушатель потери фокуса поля ввода `dimsX`	|Внутри `setupListeners()`				|`void`						|
+|`dimsYListener()`				|Слушатель потери фокуса поля ввода `dimsY`	|Внутри `setupListeners()`				|`void`						|
+|`dimsAListener()`				|Слушатель потери фокуса поля ввода `dimsA`	|Внутри `setupListeners()`				|`void`						|
+|`dimsBListener()`				|Слушатель потери фокуса поля ввода `dimsB`	|Внутри `setupListeners()`				|`void`						|
 |`saveButtonListener()`			|Вешает `click` на кнопку `btnSaveDims`		|Внутри `setupListeners()`				|`void`						|
 |`patternIdListener()`			|Слушатель изменения значения `patternId`	|Внутри `setupListeners()`				|`void`						|
 

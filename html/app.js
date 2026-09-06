@@ -145,9 +145,13 @@ function uiStateDimsX(isValid) {
 }
 
 
+// =========================== Поле "Размер Y" ===============================
 /**
- * Проверяет кратность данных в поле `dimsY` к `pixelSize`
- * @returns {boolean} `true` если делится без остатка
+ * Проверяет делимость без остатка данных поля `dimsY` к `pixelSize`
+ * 
+ * @returns {boolean}
+ * - `false` - если данные из `currentSettings` не загрузились
+ * - `true` - если делится без остатка
  */
 function isDimsYValid() {
     if (!currentSettings) {
@@ -156,8 +160,25 @@ function isDimsYValid() {
     }
     return currentSettings.dimsY % currentSettings.pixelSize === 0;
 }
+
 /**
- * Отрисовывает статус поля ввода размера `dimsY` в зависимости от переданного флага.
+ * Передает флаг `isValid` в `uiStateDimsY()` для отрисовки поля
+ * ввода с ошибкой `error` или с текстом `supportingText`.
+ * 
+ * @returns {boolean} Результат проверки:
+ * - `false`, если `isDimsYValid()` вернула `false`.
+ * - `true`, если `isDimsYValid()` вернула `true`.
+ */
+function checkDimsY() {
+    const isValid = isDimsYValid();
+    uiStateDimsY(isValid);
+    return isValid;
+}
+/**
+ * Отрисовывает статус поля ввода размера `dimsY` в зависимости
+ * от переданного флага.
+ * 
+ * @param {boolean} isValid - флаг передаваемый от `checkDimsY()` 
  */
 function uiStateDimsY(isValid) {
     if (!fieldDimsY) return;
@@ -170,10 +191,105 @@ function uiStateDimsY(isValid) {
         fieldDimsY.errorText = 'Не делится';
     }
 }
-function checkDimsY() {
-    const isValid = isDimsYValid();
-    uiStateDimsY(isValid);
+
+
+
+
+
+// =========================== Поле "Размер A" ===============================
+/**
+ * Проверяет делимость без остатка данных поля `dimsA` к `pixelSize`
+ * 
+ * @returns {boolean}
+ * - `false` - если данные из `currentSettings` не загрузились
+ * - `true` - если делится без остатка
+ */
+function isDimsAValid() {
+    if (!currentSettings) {
+        console.error(`[isDimsAValid] Данные из ${settingsPath} не загрузились.`);
+        return false;
+    }
+    return currentSettings.dimsA % currentSettings.pixelSize === 0;
+}
+
+/**
+ * Передает флаг `isValid` в `uiStateDimsA()` для отрисовки поля
+ * ввода с ошибкой `error` или с текстом `supportingText`.
+ * 
+ * @returns {boolean} Результат проверки:
+ * - `false`, если `isDimsAValid()` вернула `false`.
+ * - `true`, если `isDimsAValid()` вернула `true`.
+ */
+function checkDimsA() {
+    const isValid = isDimsAValid();
+    uiStateDimsA(isValid);
     return isValid;
+}
+/**
+ * Отрисовывает статус поля ввода размера `dimsA` в зависимости
+ * от переданного флага.
+ * 
+ * @param {boolean} isValid - флаг передаваемый от `checkDimsA()` 
+ */
+function uiStateDimsA(isValid) {
+    if (!fieldDimsA) return;
+    const pixelCount = currentSettings.dimsA / currentSettings.pixelSize;
+    if (isValid) {
+        fieldDimsA.supportingText = `OK. ${pixelCount} пикселей`;
+        fieldDimsA.error = false;
+    } else {
+        fieldDimsA.error = true;
+        fieldDimsA.errorText = 'Не делится';
+    }
+}
+
+
+
+// =========================== Поле "Размер B" ===============================
+/**
+ * Проверяет делимость без остатка данных поля `dimsB` к `pixelSize`
+ * 
+ * @returns {boolean}
+ * - `false` - если данные из `currentSettings` не загрузились
+ * - `true` - если делится без остатка
+ */
+function isDimsBValid() {
+    if (!currentSettings) {
+        console.error(`[isDimsBValid] Данные из ${settingsPath} не загрузились.`);
+        return false;
+    }
+    return currentSettings.dimsB % currentSettings.pixelSize === 0;
+}
+
+/**
+ * Передает флаг `isValid` в `uiStateDimsB()` для отрисовки поля
+ * ввода с ошибкой `error` или с текстом `supportingText`.
+ * 
+ * @returns {boolean} Результат проверки:
+ * - `false`, если `isDimsBValid()` вернула `false`.
+ * - `true`, если `isDimsBValid()` вернула `true`.
+ */
+function checkDimsB() {
+    const isValid = isDimsBValid();
+    uiStateDimsB(isValid);
+    return isValid;
+}
+/**
+ * Отрисовывает статус поля ввода размера `dimsB` в зависимости
+ * от переданного флага.
+ * 
+ * @param {boolean} isValid - флаг передаваемый от `checkDimsB()` 
+ */
+function uiStateDimsB(isValid) {
+    if (!fieldDimsB) return;
+    const pixelCount = currentSettings.dimsB / currentSettings.pixelSize;
+    if (isValid) {
+        fieldDimsB.supportingText = `OK. ${pixelCount} пикселей`;
+        fieldDimsB.error = false;
+    } else {
+        fieldDimsB.error = true;
+        fieldDimsB.errorText = 'Не делится';
+    }
 }
 
 
@@ -189,10 +305,11 @@ function checkDimsY() {
 
 
 
-function uiStateSaveButton(isX, isY) {
+
+
+function uiStateSaveButton(isValid) {
     if (btnSaveDims) {
-        // Кнопка заблокирована (disabled = true), если Х или Y равны false
-        btnSaveDims.disabled = !(isX && isY);
+        btnSaveDims.disabled = !isValid;
     }
 }
 
@@ -205,7 +322,7 @@ function uiStateSaveButton(isX, isY) {
 function toggleExtraDims() {
     if (!fieldDimsA || !fieldDimsB) return false;
     
-    const isVisible = currentSettings?.patternID > 3;
+    const isVisible = currentSettings?.patternID <= 3;
     const display = isVisible ? '' : 'none';
     
     fieldDimsA.style.display = display;
@@ -229,7 +346,8 @@ function toggleExtraDims() {
 
 
 /**
- * Общая функция отрисовки UI. Запускает все функции отрисовки при загрузке веб-сервера.
+ * Общая функция отрисовки UI. Запускает все функции отрисовки
+ * при загрузке веб-сервера.
  */
 function renderAll() {
     renderVersion();
@@ -481,7 +599,7 @@ function renderSelectPatternId() {
  * Универсальная функция сохранения настроек.
  * Автоматически выбирает localStorage или контроллер в зависимости от режима.
  * @async
- * @returns {Promise<boolean>} true, если сохранение прошло успешно
+ * @returns {Promise<boolean>} `true`, если сохранение прошло успешно
  */
 async function saveSettings() {
     if (DEBUG_MODE) {
@@ -547,6 +665,8 @@ async function sendSettingsToController() {
 function setupListeners() {
     dimsXListener();
     dimsYListener();
+    dimsAListener();
+    dimsBListener();
     patternIdListener();
     saveButtonListener();
 }
@@ -566,17 +686,32 @@ function dimsYListener() {
         syncUI();
     });
 }
+function dimsAListener() {
+    if (!fieldDimsA) return;
+    fieldDimsA.addEventListener('blur', (e) => {
+        currentSettings.dimsA = parseInt(e.target.value);
+        syncUI();
+    });
+}
+function dimsBListener() {
+    if (!fieldDimsB) return;
+    fieldDimsB.addEventListener('blur', (e) => {
+        currentSettings.dimsB = parseInt(e.target.value);
+        syncUI();
+    });
+}
 
 
 
 function patternIdListener() {
     if (!selectPatternId) return;
-    selectPatternId.addEventListener('change', (e) => {
+    selectPatternId.addEventListener('change', async (e) => {
         currentSettings.patternID = parseInt(e.target.value);
         console.log('Выбран pattern', currentSettings.patternID);
         syncUI();
-        sendSettingsToController();
+        //sendSettingsToController();
         //sendSettingsToLocalStorage();
+        await saveSettings();
     });
 }
 
@@ -608,15 +743,14 @@ function saveButtonListener() {
 function syncUI() {
     const isX = checkDimsX();
     const isY = checkDimsY();
-    //const isExtra = currentSettings.patternID > 3;
     
-    //toggleExtraDims(isExtra);
+    const isExtra = toggleExtraDims();
     
-    //const isA = isExtra ? checkDimsA() : true;
-    //const isB = isExtra ? checkDimsB() : true;
+    const isA = isExtra ? checkDimsA() : true;
+    const isB = isExtra ? checkDimsB() : true;
     
-    //uiStateSaveButton(isX && isY && isA && isB);
-    uiStateSaveButton(isX, isY);
+    uiStateSaveButton(isX && isY && isA && isB);
+    //uiStateSaveButton(isX, isY);
 }
 
 
@@ -630,7 +764,7 @@ function syncUI() {
 /**
  * Асинхронная функция инициализации приложения.
  * 
- * Загружает файл настроек settings.json (путь указан в `settingsPath`),
+ * Загружает файл настроек `settings.json` (путь указан в `settingsPath`),
  * парсит его содержимое и сохраняет в глобальную переменную `currentSettings`.
  * 
  * @async
