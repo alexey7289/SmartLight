@@ -708,6 +708,7 @@ function patternIdListener() {
     selectPatternId.addEventListener('change', async (e) => {
         currentSettings.patternID = parseInt(e.target.value);
         console.log('Выбран pattern', currentSettings.patternID);
+        addLog(`Выбран номер рисунка: ${currentSettings.patternID}`);
         syncUI();
         //sendSettingsToController();
         //sendSettingsToLocalStorage();
