@@ -34,6 +34,8 @@ function validateDOMElements() {
     toggleIsPower = document.getElementById('toggleIsPower');
     btnSaveDims = document.getElementById('btnSaveDims');
     selectPatternId = document.getElementById('selectPatternId');
+    selectEffectId = document.getElementById('selectEffectId');
+
 
     const missingElements = [];
 
@@ -48,6 +50,8 @@ function validateDOMElements() {
     if (!toggleIsPower) missingElements.push('toggleIsPower');
     if (!btnSaveDims) missingElements.push('btnSaveDims');
     if (!selectPatternId) missingElements.push('selectPatternId');
+    if (!selectEffectId) missingElements.push('selectEffectId');
+
 
     if (missingElements.length > 0) {
         console.error(`[validateDOMElements] Не найдены элементы: ${missingElements.join(', ')}`);
@@ -316,13 +320,13 @@ function uiStateSaveButton(isValid) {
 
 
 /**
- * Показывает или скрывает поля DimsA и DimsB в зависимости от patternID.
+ * Показывает или скрывает поля DimsA и DimsB в зависимости от patternId.
  * @returns {boolean} `true` если поля показаны, `false` если скрыты
  */
 function toggleExtraDims() {
     if (!fieldDimsA || !fieldDimsB) return false;
     
-    const isVisible = currentSettings?.patternID <= 3;
+    const isVisible = currentSettings?.patternId <= 3;
     const display = isVisible ? '' : 'none';
     
     fieldDimsA.style.display = display;
@@ -359,6 +363,7 @@ function renderAll() {
     renderFieldDimsB();
     renderFieldPixelSize();
     renderSelectPatternId();
+    renderSelectEffectId();
 }
 
 
@@ -582,14 +587,42 @@ function renderSelectPatternId() {
         return;
     }
     
-    if (currentSettings.patternID !== undefined) {
+    if (currentSettings.patternId !== undefined) {
         // .toString() преобразует число 3 в строку "3", которая совпадет с value="3" в HTML
-        rspi.value = currentSettings.patternID.toString();
-        //console.log('[renderSelectPatternId] Установлен ID рисунка:', currentSettings.patternID);
+        rspi.value = currentSettings.patternId.toString();
+        //console.log('[renderSelectPatternId] Установлен ID рисунка:', currentSettings.patternId);
     } else {
-        console.log('[renderSelectPatternId] Элемент "patternID" не найден или отсутствует в', settingsPath);
+        console.log('[renderSelectPatternId] Элемент "patternId" не найден или отсутствует в', settingsPath);
     }
 }
+
+
+
+
+
+/**
+ * Функция отображения поля выбора `selectId`
+ */
+function renderSelectEffectId() {
+    const rsei = document.getElementById('selectEffectId');
+    if (!rsei) {
+        console.error('[renderSelectPatternId] Элемент с id="selectEffectId" не существует');
+        return;
+    }
+    
+    if (currentSettings.effectId !== undefined) {
+        // .toString() преобразует число 3 в строку "3", которая совпадет с value="3" в HTML
+        rsei.value = currentSettings.effectId.toString();
+        //console.log('[renderSelectEffectId] Установлен ID рисунка:', currentSettings.effectId);
+    } else {
+        console.log('[renderSelectEffectId] Элемент "effectId" не найден или отсутствует в', settingsPath);
+    }
+}
+
+
+
+
+
 
 
 
@@ -706,9 +739,9 @@ function dimsBListener() {
 function patternIdListener() {
     if (!selectPatternId) return;
     selectPatternId.addEventListener('change', async (e) => {
-        currentSettings.patternID = parseInt(e.target.value);
-        console.log('Выбран pattern', currentSettings.patternID);
-        addLog(`Выбран номер рисунка: ${currentSettings.patternID}`);
+        currentSettings.patternId = parseInt(e.target.value);
+        console.log('Выбран pattern', currentSettings.patternId);
+        addLog(`Выбран номер рисунка: ${currentSettings.patternId}`);
         syncUI();
         //sendSettingsToController();
         //sendSettingsToLocalStorage();

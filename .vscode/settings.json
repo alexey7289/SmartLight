@@ -2,5 +2,7 @@
     "[gpp]": {
         "editor.defaultFormatter": "anzory.vscode-gppl-support",
         "files.encoding": "windows1251"
-    }
+    },
+    "editor.selectionHighlight": false,
+    "editor.occurrencesHighlight": "off"    
 }

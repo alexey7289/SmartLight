@@ -43,11 +43,9 @@
 	<md-outlined-text-field id="fieldPixelSize" label="Размер пикселя" value="20" max="10000" min="5" type="number" no-spinner error-text="Ошибка"></md-outlined-text-field>
 		<br>
 		<br>
-	<md-outlined-button id="btnSaveDims">
-		Сохранить
-	</md-outlined-button>
-	<br>
-	<br>
+	<md-outlined-button id="btnSaveDims">Сохранить</md-outlined-button>
+		<br>
+		<br>
 	<md-outlined-select id="selectPatternId"
 		label="Рисунок" quick>
 		<md-select-option value="1"><div slot="headline">1. Яблоко</div></md-select-option>
@@ -55,8 +53,15 @@
 		<md-select-option value="3"><div slot="headline">3. Лимон</div></md-select-option>
     	<md-select-option value="4"><div slot="headline">4. Апельсин</div></md-select-option>
 	</md-outlined-select>
-	<br>
-	<br>
+		<br>
+		<br>
+	<md-outlined-select id="selectEffectId"
+		label="Эффект" quick>
+		<md-select-option value="1"><div slot="headline">1. Включение</div></md-select-option>
+    	<md-select-option value="2"><div slot="headline">2. Выключение</div></md-select-option>
+		<md-select-option value="3"><div slot="headline">3. Мигание</div></md-select-option>
+    	<md-select-option value="4"><div slot="headline">4. Строб</div></md-select-option>
+	</md-outlined-select>
 	<div style="margin-top: 20px;"></div>
 	<md-outlined-text-field 
 		id="logField" 

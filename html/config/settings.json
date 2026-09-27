@@ -7,7 +7,8 @@
     "dimsA": 110,
     "dimsB": 289,
     "pixelSize": 10,
-    "patternID": 3,
+    "patternId": 3,
+    "effectId": 3,
 
 
 
@@ -21,6 +22,5 @@
     "softstartSpeed": 500,
     "maxBrightness": 75,  
     "drawId": 2,
-    "effectId": 5,
     "channelsQty": 1
 }

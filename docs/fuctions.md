@@ -73,7 +73,9 @@ const IS_PRODUCTION = false;
 |`renderFieldDimsA()`			|Значение дополнительного размера `A`		|Внутри `renderAll()`				|`void`						|
 |`renderFieldDimsB()`			|Значение дополнительного размера `B`		|Внутри `renderAll()`				|`void`						|
 |`renderFieldPixelSize()`		|Значение размера кластера ленты			|Внутри `renderAll()`				|`void`						|
-|`renderSelectPatternId()`		|Строковое имя рисунка по маппингу ID в поле|Внутри `renderAll()`				|`void`						|
+|`renderSelectPatternId()`		|Имя рисунка по маппингу ID в поле 			|Внутри `renderAll()`				|`void`						|
+|`renderSelectEffectId()`		|Строковое имя рисунка по маппингу ID в поле|Внутри `renderAll()`				|`void`						|
+
 
 
 
