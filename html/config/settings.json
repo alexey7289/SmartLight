@@ -21,6 +21,5 @@
     "animationSpeed": 1300,
     "softstartSpeed": 500,
     "maxBrightness": 75,  
-    "drawId": 2,
     "channelsQty": 1
 }

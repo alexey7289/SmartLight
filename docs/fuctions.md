@@ -67,7 +67,7 @@ const IS_PRODUCTION = false;
 |`renderAll()`					|Вызов всех функций отрисовки UI			|При старте после загрузки настроек	|`void`						|
 |`renderVersion()`				|Версия веб-сервера в текстовое поле		|Внутри `renderAll()`				|`void`						|
 |`renderIsPower()`				|Состояние FAB (атрибут variant и иконка)	|Внутри `renderAll()`				|`void`						|
-|`renderIsDark()`				|Состояние toggle переключателя темной темы	|Внутри `renderAll()`				|`void`						|
+|`renderIsDark()`				|Состояние toggle-переключателя темной темы	|Внутри `renderAll()`				|`void`						|
 |`renderFieldDimsX()`			|Значение размера `X` в поле ввода			|Внутри `renderAll()`				|`void`						|
 |`renderFieldDimsY()`			|Значение размера `Y` в поле ввода			|Внутри `renderAll()`				|`void`						|
 |`renderFieldDimsA()`			|Значение дополнительного размера `A`		|Внутри `renderAll()`				|`void`						|
@@ -140,6 +140,8 @@ const IS_PRODUCTION = false;
 	* *dimsAListener()* — аналогична `dimsXListener()` но вешает событие `blur` (потеря фокуса) на поле `fieldDimsA`;
 	* *dimsBListener()* — аналогична `dimsXListener()` но вешает событие `blur` (потеря фокуса) на поле `fieldDimsB`;
 	* *patternIdListener()* — вешает событие `change` на выпадающий список `selectPatternId`. Функция является асинхронной: обновляет `currentSettings.patternID`, запускает синхронизацию интерфейса и  автоматически сохраняет данные через await `saveSettings()`;
+	* *effectIdListener()* — тоже что и `patternIdListener()` но для списка `selectEffectId`;
+
 
 |Функция						|Описание									|Вызывается								|Возвращает					|
 |:------------------------------|:------------------------------------------|:--------------------------------------|:--------------------------|
@@ -150,6 +152,7 @@ const IS_PRODUCTION = false;
 |`dimsBListener()`				|Слушатель потери фокуса поля ввода `dimsB`	|Внутри `setupListeners()`				|`void`						|
 |`saveButtonListener()`			|Вешает `click` на кнопку `btnSaveDims`		|Внутри `setupListeners()`				|`void`						|
 |`patternIdListener()`			|Слушатель изменения значения `patternId`	|Внутри `setupListeners()`				|`void`						|
+|`effectIdListener()`			|Слушатель изменения значения `effectId`	|Внутри `setupListeners()`				|`void`						|
 
 
 
