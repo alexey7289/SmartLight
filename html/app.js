@@ -701,6 +701,7 @@ function setupListeners() {
     dimsAListener();
     dimsBListener();
     patternIdListener();
+    effectIdListener();
     saveButtonListener();
 }
 
@@ -745,6 +746,18 @@ function patternIdListener() {
         syncUI();
         //sendSettingsToController();
         //sendSettingsToLocalStorage();
+        await saveSettings();
+    });
+}
+
+
+function effectIdListener() {
+    if (!selectEffectId) return;
+    selectEffectId.addEventListener('change', async (e) => {
+        currentSettings.effectId = parseInt(e.target.value);
+        console.log('Выбран effect', currentSettings.effectId);
+        addLog(`Выбран номер анимации: ${currentSettings.effectId}`);
+        syncUI();
         await saveSettings();
     });
 }
