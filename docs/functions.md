@@ -6,9 +6,9 @@
 
 ### Переключатель режимов работы
 ```js
-// Логическая переменную-флаг, которая будет управлять режимом работы приложения (Разработка / Продакшн с ESP32)
+// Логическая переменная-флаг, которая будет управлять режимом работы приложения (Разработка / Продакшн с ESP32)
 // true - работаем с реальным контроллером, false - режим разработки (локальный кэш)
-const IS_PRODUCTION = false;
+const DEBUG_MODE = true;
 ```
 
 
@@ -44,7 +44,7 @@ const IS_PRODUCTION = false;
 |`addLog(message, isError)`			|Добавление сообщения в окно логирования	|Везде									|`void`						|
 |`saveSettings()`					|Сохранение настроек						|В слушателях							|`promise<boolean>`			|
 |`sendSettingsToController()`		|Отправка настроек на контроллер через POST	|В `saveSettings()`						|`promise<boolean>`			|
-|`sendSettingsToLocalStorage()`		|Отправка настроек в локальную память		|В `saveSettings()`						|`promise<boolean>`			|
+|`sendSettingsToLocalStorage()`		|Отправка настроек в локальную память		|В `saveSettings()`						|`boolean`			|
 
 
 
@@ -61,6 +61,16 @@ const IS_PRODUCTION = false;
 ### Render
 * *render-функции* отображают только данные. Они не проверяют валидность, не управляют кнопками, не логируют ошибки. Их задача — взять значение из `currentSettings` и показать в UI
 	* *renderAll()* — общая функция отрисовки, последовательно вызывающая все частные функции рендеринга для инициализации интерфейса;
+	* *renderVersion()* — подставляет версию веб-сервера из `currentSettings.version` в текст элемента `appVersion` в формате `v{version}`;
+	* *renderIsPower()* — управляет кнопкой питания `toggleIsPower`: при `isPower = true` устанавливает атрибут `variant="primary"` и иконку `lightbulb`, при `false` — `variant="tertiary"` и иконку `light_off`;
+	* *renderIsDark()* — устанавливает состояние переключателя тёмной темы `toggleIsDark` через свойство `selected` на основе `currentSettings.isDark`;
+	* *renderFieldDimsX()* — подставляет значение `currentSettings.dimsX` в поле ввода `fieldDimsX`;
+	* *renderFieldDimsY()* — подставляет значение `currentSettings.dimsY` в поле ввода `fieldDimsY`;
+	* *renderFieldDimsA()* — подставляет значение `currentSettings.dimsA` в поле ввода `fieldDimsA`;
+	* *renderFieldDimsB()* — подставляет значение `currentSettings.dimsB` в поле ввода `fieldDimsB`;
+	* *renderFieldPixelSize()* — подставляет значение `currentSettings.pixelSize` в поле ввода `fieldPixelSize`;
+	* *renderSelectPatternId()* — функция устанавливает `value` селекта `selectPatternId` по числовому ID через `.toString()`;
+	* *renderSelectEffectId()* — то же, что и `renderSelectPatternId()`, но для селекта `selectEffectId`;
 
 |Функция						|Описание									|Вызывается							|Возвращает					|
 |:------------------------------|:------------------------------------------|:----------------------------------|:--------------------------|
@@ -73,8 +83,8 @@ const IS_PRODUCTION = false;
 |`renderFieldDimsA()`			|Значение дополнительного размера `A`		|Внутри `renderAll()`				|`void`						|
 |`renderFieldDimsB()`			|Значение дополнительного размера `B`		|Внутри `renderAll()`				|`void`						|
 |`renderFieldPixelSize()`		|Значение размера кластера ленты			|Внутри `renderAll()`				|`void`						|
-|`renderSelectPatternId()`		|Имя рисунка по маппингу ID в поле 			|Внутри `renderAll()`				|`void`						|
-|`renderSelectEffectId()`		|Строковое имя рисунка по маппингу ID в поле|Внутри `renderAll()`				|`void`						|
+|`renderSelectPatternId()`		|Устанавливает `value` селекта по ID 		|Внутри `renderAll()`				|`void`						|
+|`renderSelectEffectId()`		|Устанавливает `value` селекта по ID 		|Внутри `renderAll()`				|`void`						|
 
 
 
@@ -118,8 +128,8 @@ const IS_PRODUCTION = false;
 	* *uiStateDimsY(isValid)* — аналогична `uiStateDimsX()` только для вспомогательного текста поля `fieldDimsY`;
 	* *uiStateDimsA(isValid)* — аналогична `uiStateDimsX()` только для вспомогательного текста поля `fieldDimsA`;
 	* *uiStateDimsB(isValid)* — аналогична `uiStateDimsX()` только для вспомогательного текста поля `fieldDimsB`;
-	* *uiStateSaveButton(isX)* — блокирует или разблокирует кнопку сохранения параметров на основе переданного флага валидности от `syncUI()`;
-	* *toggleExtraDims()* — функция переключения видимости полей `DimsA` и `DimsB`. Если `patternID <= 3`, поля отображаются (через `display = ''`), иначе скрываются (`display = 'none'`);
+	* *uiStateSaveButton(isValid)* — блокирует или разблокирует кнопку сохранения параметров на основе переданного флага валидности от `syncUI()`;
+	* *toggleExtraDims()* — функция переключения видимости полей `DimsA` и `DimsB`. Если `patternId <= 3`, поля отображаются (через `display = ''`), иначе скрываются (`display = 'none'`);
 
 |Функция						|Описание									|Вызывается						|Возвращает					|
 |:------------------------------|:------------------------------------------|:------------------------------|:--------------------------|
@@ -128,7 +138,7 @@ const IS_PRODUCTION = false;
 |`uiStateDimsA(isValid)`		|Статус `DimsA` на основе флага `isValid`	|Внутри `checkDimsA()`			|`void`						|
 |`uiStateDimsB(isValid)`		|Статус `DimsB` на основе флага `isValid`	|Внутри `checkDimsB()`			|`void`						|
 |`uiStateSaveButton(isValid)`	|Статус кнопки "Сохранить" (disabled)		|Внутри `syncUI()`				|`void` 					|
-|`toggleExtraDims()`			|Переключение видимости полей DimsA и DimsB	|Доступна глобально				|`boolean` 					|
+|`toggleExtraDims()`			|Переключение видимости полей DimsA и DimsB	|Внутри `syncUI()`				|`boolean` 					|
 
 
 
@@ -139,7 +149,8 @@ const IS_PRODUCTION = false;
 	* *dimsYListener()* — аналогична `dimsXListener()` но вешает событие `blur` (потеря фокуса) на поле `fieldDimsY`;
 	* *dimsAListener()* — аналогична `dimsXListener()` но вешает событие `blur` (потеря фокуса) на поле `fieldDimsA`;
 	* *dimsBListener()* — аналогична `dimsXListener()` но вешает событие `blur` (потеря фокуса) на поле `fieldDimsB`;
-	* *patternIdListener()* — вешает событие `change` на выпадающий список `selectPatternId`. Функция является асинхронной: обновляет `currentSettings.patternID`, запускает синхронизацию интерфейса и  автоматически сохраняет данные через await `saveSettings()`;
+	* *saveButtonListener()* — вешает событие `click` на кнопку `btnSaveDims`. Функция является асинхронной: при нажатии блокирует кнопку, меняет её текст на «Отправка...», вызывает `saveSettings()` для сохранения текущих настроек. После завершения (успех или неудача) разблокирует кнопку, возвращает исходный текст «Сохранить» и добавляет запись в лог через `addLog()`;
+	* *patternIdListener()* — вешает событие `change` на выпадающий список `selectPatternId`. Функция является асинхронной: обновляет `currentSettings.patternId`, запускает синхронизацию интерфейса и  автоматически сохраняет данные через await `saveSettings()`;
 	* *effectIdListener()* — тоже что и `patternIdListener()` но для списка `selectEffectId`;
 
 
