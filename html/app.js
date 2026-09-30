@@ -561,7 +561,7 @@ function renderFieldDimsB() {
 
 
 /**
- * Функция отображения значения дополнительного размера dimsB из файла настроек
+ * Функция отображения значения размера пикселя
  */
 function renderFieldPixelSize() {
     const rfps = document.getElementById('fieldPixelSize');
@@ -606,7 +606,7 @@ function renderSelectPatternId() {
 function renderSelectEffectId() {
     const rsei = document.getElementById('selectEffectId');
     if (!rsei) {
-        console.error('[renderSelectPatternId] Элемент с id="selectEffectId" не существует');
+        console.error('[renderSelectEffectId] Элемент с id="selectEffectId" не существует');
         return;
     }
     
@@ -776,7 +776,7 @@ function saveButtonListener() {
             addLog('Не удалось сохранить настройки', true);
         }
         btnSaveDims.disabled = false;
-        btnSaveDims.textContent = "Сохранить" // Возво=ращаем текст кнопки на первоначальный
+        btnSaveDims.textContent = "Сохранить" // Возвращаем текст кнопки на первоначальный
     });
 }
 
