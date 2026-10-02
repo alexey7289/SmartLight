@@ -71,6 +71,7 @@ const DEBUG_MODE = true;
 	* *renderFieldPixelSize()* — подставляет значение `currentSettings.pixelSize` в поле ввода `fieldPixelSize`;
 	* *renderSelectPatternId()* — функция устанавливает `value` селекта `selectPatternId` по числовому ID через `.toString()`;
 	* *renderSelectEffectId()* — то же, что и `renderSelectPatternId()`, но для селекта `selectEffectId`;
+	* *renderChannelsQty()* — отрисовывает количество каналов вывода анимации.
 
 |Функция						|Описание									|Вызывается							|Возвращает					|
 |:------------------------------|:------------------------------------------|:----------------------------------|:--------------------------|
@@ -85,6 +86,7 @@ const DEBUG_MODE = true;
 |`renderFieldPixelSize()`		|Значение размера кластера ленты			|Внутри `renderAll()`				|`void`						|
 |`renderSelectPatternId()`		|Устанавливает `value` селекта по ID 		|Внутри `renderAll()`				|`void`						|
 |`renderSelectEffectId()`		|Устанавливает `value` селекта по ID 		|Внутри `renderAll()`				|`void`						|
+|`renderChannelsQty()`			|Устанавливает `value` селекта по ID 		|Внутри `renderAll()`				|`void`						|
 
 
 

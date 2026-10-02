@@ -35,6 +35,9 @@ function validateDOMElements() {
     btnSaveDims = document.getElementById('btnSaveDims');
     selectPatternId = document.getElementById('selectPatternId');
     selectEffectId = document.getElementById('selectEffectId');
+    ch1 = document.getElementById('ch1');
+    ch1_2 = document.getElementById('ch1_2');
+    ch1_2_3 = document.getElementById('ch1_2_3');
 
 
     const missingElements = [];
@@ -51,6 +54,9 @@ function validateDOMElements() {
     if (!btnSaveDims) missingElements.push('btnSaveDims');
     if (!selectPatternId) missingElements.push('selectPatternId');
     if (!selectEffectId) missingElements.push('selectEffectId');
+    if (!ch1) missingElements.puch('ch1');
+    if (!ch1_2) missingElements.puch('ch1_2');
+    if (!ch1_2_3) missingElements.puch('ch1_2_3');
 
 
     if (missingElements.length > 0) {

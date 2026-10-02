@@ -9,7 +9,7 @@
     "pixelSize": 10,
     "patternId": 3,
     "effectId": 3,
-
+    "channelsQty": 1,
 
 
 
@@ -20,6 +20,6 @@
     "step": 10,
     "animationSpeed": 1300,
     "softstartSpeed": 500,
-    "maxBrightness": 75,  
-    "channelsQty": 1
+    "maxBrightness": 75  
+    
 }
