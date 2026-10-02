@@ -6,15 +6,15 @@
 
 ### Переключатель режимов работы
 ```js
-// Логическая переменная-флаг, которая будет управлять режимом работы приложения (Разработка / Продакшн с ESP32)
-// true - работаем с реальным контроллером, false - режим разработки (локальный кэш)
+// false — Режим разработки (работа с файлом JSON + localStorage)
+// true  — Режим продакшена (работа с реальным контроллером ESP32)
 const DEBUG_MODE = true;
 ```
 
 
 
 ### Root
-* *root-функции* проверка наличия импортируемых данных. При отсутствии возвращает `false` и дальнейшее выполнение `app.js` прекращается
+* *root-функции* проверка наличия необходимых элементов интерфейса на странице (DOM-дерева). При отсутствии возвращает `false` и дальнейшее выполнение `app.js` прекращается
 	* *validateDOMElements()* — функция проверки наличия всех необходимых DOM-элементов на странице. Находит элементы по ID и **сохраняет ссылки в глобальные переменные**. Возвращает `true`, если все элементы найдены, или `false`, если хотя бы один отсутствует;
 
 |Функция						|Описание									|Вызывается								|Возвращает					|
@@ -36,6 +36,7 @@ const DEBUG_MODE = true;
 ### Utilities
 * *Utilities-функции* вспомогательные функции, которые используются в разных местах
 	* *addLog(message, isError)* — функция добавления сообщения в окно логирования. Форматирует текст с временной меткой и префиксом `[INFO]` (по умолчанию) или `[ERROR]` (если `isError = true`), добавляет новую строку к существующему логу. Если поле лога (`logField`) не найдено, функция завершается без действий;
+	* *saveSettings()* — универсальная асинхронная функция сохранения настроек. Автоматически вызывает `sendSettingsToLocalStorage()` или 	`sendSettingsToController()` в зависимости от текущего значения `DEBUG_MODE`. Возвращает `promise<boolean>`;
 	* *sendSettingsToController()* — асинхронная функция отправки текущих настроек `currentSettings` на контроллер по пути `/save` методом `POST`;
 	* *sendSettingsToLocalStorage()* — функция сохранения текущих настроек `currentSettings` в локальную память браузера под ключом `smartLightSettings`;
 
@@ -71,7 +72,7 @@ const DEBUG_MODE = true;
 	* *renderFieldPixelSize()* — подставляет значение `currentSettings.pixelSize` в поле ввода `fieldPixelSize`;
 	* *renderSelectPatternId()* — функция устанавливает `value` селекта `selectPatternId` по числовому ID через `.toString()`;
 	* *renderSelectEffectId()* — то же, что и `renderSelectPatternId()`, но для селекта `selectEffectId`;
-	* *renderChannelsQty()* — Функция отображения выбранного количества каналов (радиокнопки);
+	* *renderChannelsQty()* — находит радиокнопку `md-radio` с соответствующим `value` и устанавливает ей свойство `checked = true`;
 
 |Функция						|Описание									|Вызывается							|Возвращает					|
 |:------------------------------|:------------------------------------------|:----------------------------------|:--------------------------|
@@ -86,14 +87,14 @@ const DEBUG_MODE = true;
 |`renderFieldPixelSize()`		|Значение размера кластера ленты			|Внутри `renderAll()`				|`void`						|
 |`renderSelectPatternId()`		|Устанавливает `value` селекта по ID 		|Внутри `renderAll()`				|`void`						|
 |`renderSelectEffectId()`		|Устанавливает `value` селекта по ID 		|Внутри `renderAll()`				|`void`						|
-|`renderChannelsQty()`			|Устанавливает `value` селекта по ID 		|Внутри `renderAll()`				|`void`						|
+|`renderChannelsQty()`			|Отображает кол-во выбранных каналов 		|Внутри `renderAll()`				|`void`						|
 
 
 
 
 ### Valid
 * *valid-функции* - математика и вычисления. Управляют состоянием `UI-функций`
-	* *isDimsXValid()* — проверяет, делится ли установленное значение `dimsX` на `pixelSize` без остатка. Требует наличия объекта `currentSettings`;
+	* *isDimsXValid()* — проверяет, делится ли установленное значение `dimsX` на `pixelSize` без остатка. Требует наличия объекта `currentSettings` и если он не загружен — вывод ошибку в консоль через `console.error` и возвращают `false`;
 	* *isDimsYValid()* — аналогична `isDimsXValid()` но проверяет делимость `dimsY` на `pixelSize`;
 	* *isDimsAValid()* — аналогична `isDimsXValid()` но проверяет делимость `dimsA` на `pixelSize`;
 	* *isDimsBValid()* — аналогична `isDimsXValid()` но проверяет делимость `dimsB` на `pixelSize`;
@@ -147,13 +148,14 @@ const DEBUG_MODE = true;
 ### Listeners
 * *listeners-функции* - инициализация прослушивания действий пользователя
 	* *setupListeners()* — агрегатор для одновременной инициализации всех имеющихся слушателей событий на элементах интерфейса;
-	* *dimsXListener()* — вешает событие `blur` (потеря фокуса) на поле `fieldDimsX`. Парсит значение в `int`, обновляет `currentSettings.dimsX` и запускает `syncUI()`;
+	* *dimsXListener()* — вешает событие `blur` (потеря фокуса) на поле `fieldDimsX`. Приводит строковое значение поля к целому числу с помощью `parseInt()`, обновляет `currentSettings.dimsX` и запускает `syncUI()`;
 	* *dimsYListener()* — аналогична `dimsXListener()` но вешает событие `blur` (потеря фокуса) на поле `fieldDimsY`;
 	* *dimsAListener()* — аналогична `dimsXListener()` но вешает событие `blur` (потеря фокуса) на поле `fieldDimsA`;
 	* *dimsBListener()* — аналогична `dimsXListener()` но вешает событие `blur` (потеря фокуса) на поле `fieldDimsB`;
 	* *saveButtonListener()* — вешает событие `click` на кнопку `btnSaveDims`. Функция является асинхронной: при нажатии блокирует кнопку, меняет её текст на «Отправка...», вызывает `saveSettings()` для сохранения текущих настроек. После завершения (успех или неудача) разблокирует кнопку, возвращает исходный текст «Сохранить» и добавляет запись в лог через `addLog()`;
 	* *patternIdListener()* — вешает событие `change` на выпадающий список `selectPatternId`. Функция является асинхронной: обновляет `currentSettings.patternId`, запускает синхронизацию интерфейса и  автоматически сохраняет данные через await `saveSettings()`;
 	* *effectIdListener()* — тоже что и `patternIdListener()` но для списка `selectEffectId`;
+	* *channelsQtyListener()* — навешивает обработчики событий на группу радиокнопок выбора количества каналов;
 
 
 |Функция						|Описание									|Вызывается								|Возвращает					|
@@ -166,6 +168,7 @@ const DEBUG_MODE = true;
 |`saveButtonListener()`			|Вешает `click` на кнопку `btnSaveDims`		|Внутри `setupListeners()`				|`void`						|
 |`patternIdListener()`			|Слушатель изменения значения `patternId`	|Внутри `setupListeners()`				|`void`						|
 |`effectIdListener()`			|Слушатель изменения значения `effectId`	|Внутри `setupListeners()`				|`void`						|
+|`channelsQtyListener()`		|Слушатель радио-кнопок `channelsQty`		|Внутри `setupListeners()`				|`void`						|
 
 
 

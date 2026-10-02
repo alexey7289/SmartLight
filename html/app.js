@@ -726,6 +726,7 @@ function setupListeners() {
     patternIdListener();
     effectIdListener();
     saveButtonListener();
+    channelsQtyListener();
 }
 
 
@@ -804,6 +805,35 @@ function saveButtonListener() {
 }
 
 
+/**
+ * Навешивает слушатели событий на радиокнопки выбора количества каналов.
+ * При изменении состояния обновляет globalSettings и инициирует автосохранение.
+ * 
+ * @listens change - Событие изменения состояния радиокнопки md-radio
+ * @sideeffect Изменяет currentSettings.channelsQty и вызывает saveSettings()
+ */
+function channelsQtyListener() {
+   // Находим все радиокнопки с именем "channelsQty"
+    const radioButtons = document.querySelectorAll('md-radio[name="channelsQty"]');
+    if (radioButtons.length === 0) return;
+
+    radioButtons.forEach(radio => {
+        // Используем событие 'change', так как это радиокнопки
+        radio.addEventListener('change', async (e) => {
+            // Проверяем, что кнопка именно выбрана (стала checked)
+            if (e.target.checked) {
+                currentSettings.channelsQty = parseInt(e.target.value);
+                
+                console.log('Выбрано количество каналов:', currentSettings.channelsQty);
+                addLog(`Изменено количество каналов: ${currentSettings.channelsQty}`);
+                
+                // Синхронизируем UI (если требуется) и сохраняем изменения
+                syncUI();
+                await saveSettings();
+            }
+        });
+    });
+}
 
 
 
