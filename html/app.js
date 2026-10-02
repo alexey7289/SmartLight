@@ -54,9 +54,9 @@ function validateDOMElements() {
     if (!btnSaveDims) missingElements.push('btnSaveDims');
     if (!selectPatternId) missingElements.push('selectPatternId');
     if (!selectEffectId) missingElements.push('selectEffectId');
-    if (!ch1) missingElements.puch('ch1');
-    if (!ch1_2) missingElements.puch('ch1_2');
-    if (!ch1_2_3) missingElements.puch('ch1_2_3');
+    if (!ch1) missingElements.push('ch1');
+    if (!ch1_2) missingElements.push('ch1_2');
+    if (!ch1_2_3) missingElements.push('ch1_2_3');
 
 
     if (missingElements.length > 0) {
@@ -370,6 +370,7 @@ function renderAll() {
     renderFieldPixelSize();
     renderSelectPatternId();
     renderSelectEffectId();
+    renderChannelsQty();
 }
 
 
@@ -625,6 +626,22 @@ function renderSelectEffectId() {
     }
 }
 
+
+
+
+/**
+ * Функция отображения выбранного количества каналов (радиокнопки)
+ */
+function renderChannelsQty() {
+
+    if (currentSettings.channelsQty !== undefined) {
+        const channelsQtyValue = currentSettings.channelsQty.toString();
+        const channelsQtyRadioBtn = document.querySelector(`md-radio[name="channelsQty"][value="${channelsQtyValue}"]`);
+        if (channelsQtyRadioBtn) {
+            channelsQtyRadioBtn.checked = true;
+        }
+    }
+}
 
 
 

@@ -71,7 +71,7 @@ const DEBUG_MODE = true;
 	* *renderFieldPixelSize()* — подставляет значение `currentSettings.pixelSize` в поле ввода `fieldPixelSize`;
 	* *renderSelectPatternId()* — функция устанавливает `value` селекта `selectPatternId` по числовому ID через `.toString()`;
 	* *renderSelectEffectId()* — то же, что и `renderSelectPatternId()`, но для селекта `selectEffectId`;
-	* *renderChannelsQty()* — отрисовывает количество каналов вывода анимации.
+	* *renderChannelsQty()* — Функция отображения выбранного количества каналов (радиокнопки);
 
 |Функция						|Описание									|Вызывается							|Возвращает					|
 |:------------------------------|:------------------------------------------|:----------------------------------|:--------------------------|
