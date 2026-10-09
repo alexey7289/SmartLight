@@ -88,7 +88,6 @@ const DEBUG_MODE = true;
 |`renderSelectPatternId()`		|Устанавливает `value` селекта по ID 		|Внутри `renderAll()`				|`void`						|
 |`renderSelectEffectId()`		|Устанавливает `value` селекта по ID 		|Внутри `renderAll()`				|`void`						|
 |`renderChannelsQty()`			|Отображение кол-ва выбранных каналов 		|Внутри `renderAll()`				|`void`						|
-|`renderChannelsQty()`			|Отображает кол-во выбранных каналов 		|Внутри `renderAll()`				|`void`						|
 
 
 
@@ -157,7 +156,7 @@ const DEBUG_MODE = true;
 	* *saveButtonListener()* — вешает событие `click` на кнопку `btnSaveDims`. Функция является асинхронной: при нажатии блокирует кнопку, меняет её текст на «Отправка...», вызывает `saveSettings()` для сохранения текущих настроек. После завершения (успех или неудача) разблокирует кнопку, возвращает исходный текст «Сохранить» и добавляет запись в лог через `addLog()`;
 	* *patternIdListener()* — вешает событие `change` на выпадающий список `selectPatternId`. Функция является асинхронной: обновляет `currentSettings.patternId`, запускает синхронизацию интерфейса и  автоматически сохраняет данные через await `saveSettings()`;
 	* *effectIdListener()* — тоже что и `patternIdListener()` но для списка `selectEffectId`;
-	* *isDarkListener()* — 
+	* *isDarkListener()* — вешает событие change на переключатель `toggleIsDark`. Обновляет значение `currentSettings.isDark`, запускает функцию мгновенной смены темы `applyTheme()` и автоматически сохраняет настройки через `saveSettings()`;
 	* *channelsQtyListener()* — навешивает обработчики событий на группу радиокнопок выбора количества каналов;
 
 |Функция						|Описание									|Вызывается								|Возвращает					|
