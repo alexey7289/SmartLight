@@ -1,7 +1,7 @@
 //app.js
 
-// false — Режим разработки (работа с файлом JSON + localStorage)
-// true  — Режим продакшена (работа с реальным контроллером ESP32)
+// false — Режим продакшена (работа с реальным контроллером ESP32)
+// true  — Режим разработки (работа с файлом JSON + localStorage)
 const DEBUG_MODE = true; 
 
 let currentSettings = null;
@@ -23,6 +23,7 @@ console.log(`%c[DEBUG] Приложение запущено. Режим DEBUG_M
  *              выполнение.
  */
 function validateDOMElements() {
+    themeSwitcher = document.getElementById('themeSwitcher');
     appVersion = document.getElementById('appVersion');
     toggleIsDark = document.getElementById('toggleIsDark');
     fieldDimsX = document.getElementById('fieldDimsX');
@@ -42,6 +43,7 @@ function validateDOMElements() {
 
     const missingElements = [];
 
+    if (!themeSwitcher) missingElements.push('themeSwitcher');
     if (!appVersion) missingElements.push('appVersion');
     if (!toggleIsDark) missingElements.push('toggleIsDark');
     if (!fieldDimsX) missingElements.push('fieldDimsX');
@@ -102,6 +104,25 @@ function addLog(message, isError = false) {
 
 
 
+
+
+/**
+ * Функция переключения файла темы оформления.
+ * Находит тег <link id="themeSwitcher"> и меняет его href.
+ */
+function applyTheme() {
+    if (currentSettings.isDark) {
+        themeSwitcher.href = './css/dark-hc.css'
+        document.documentElement.style.colorScheme = 'dark';
+        document.documentElement.classList.add('dark-high-contrast');
+        document.documentElement.classList.remove('light-high-contrast');
+    } else {
+        themeSwitcher.href = './css/light-hc.css'
+        document.documentElement.style.colorScheme = 'light';
+        document.documentElement.classList.add('light-high-contrast');
+        document.documentElement.classList.remove('dark-high-contrast');
+    }
+}
 
 
 
@@ -457,6 +478,7 @@ function renderIsDark() {
     } else {
         console.log('[renderIsDark] Элемент "isDark" не найден или отсутствует в', settingsPath);
     }
+    applyTheme();
 }
 
 
@@ -726,6 +748,7 @@ function setupListeners() {
     patternIdListener();
     effectIdListener();
     saveButtonListener();
+    isDarkListener();
 }
 
 
@@ -801,6 +824,20 @@ function saveButtonListener() {
         btnSaveDims.disabled = false;
         btnSaveDims.textContent = "Сохранить" // Возвращаем текст кнопки на первоначальный
     });
+}
+
+
+function isDarkListener() {
+    if (!toggleIsDark) return;
+    toggleIsDark.addEventListener('change', async (e) => {
+        currentSettings.isDark = e.target.selected;
+        console.log('Темная тема:', currentSettings.isDark);
+        addLog(`Переключена тема. Темная: ${currentSettings.isDark}`);
+
+        applyTheme();
+
+        await saveSettings();
+    })
 }
 
 

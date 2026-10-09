@@ -1,5 +1,5 @@
 {
-    "version": "0.0.05",
+    "version": "0.0.06",
     "isPower": true,
     "isDark": false,
     "dimsX": 201,
@@ -9,7 +9,7 @@
     "pixelSize": 10,
     "patternId": 1,
     "effectId": 3,
-    "channelsQty": 3,
+    "channelsQty": 2,
 
 
 

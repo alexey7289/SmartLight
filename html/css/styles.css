@@ -1,4 +1,4 @@
-:root.light-theme {
+/*:root.light-theme {
 	--md-sys-color-primary: rgb(22, 40, 57);
 	--md-sys-color-surface-tint: rgb(78, 96, 115);
 	--md-sys-color-on-primary: rgb(255, 255, 255);
@@ -48,8 +48,24 @@
 	--md-sys-color-surface-container: rgb(228, 226, 227);
 	--md-sys-color-surface-container-high: rgb(213, 212, 213);
 	--md-sys-color-surface-container-highest: rgb(199, 198, 199);
-}
+}*/
 
 :root {
+	/* Ваш кастомный размер иконки FAB */
 	--md-fab-icon-size: 36px;
+	
+	/* Фикс для md-switch (чтобы кружок при фокусе оставался белым) */
+	/*--md-switch-selected-handle-color: #ffffff;*/
+	/*--md-switch-selected-focus-handle-color: #ffffff;*/
+	/*--md-switch-selected-hover-handle-color: #ffffff;*/
+	/*--md-switch-selected-pressed-handle-color: #ffffff;*/
+	--md-switch-selected-handle-color: var(--md-sys-color-on-primary);
+  	--md-switch-selected-focus-handle-color: var(--md-sys-color-on-primary);
+  	--md-switch-selected-hover-handle-color: var(--md-sys-color-on-primary);
+  	--md-switch-selected-pressed-handle-color: var(--md-sys-color-on-primary);
 }
+
+body {
+			font-family: 'Roboto', sans-serif;
+		}
+
